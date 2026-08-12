@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>星星銀行 · 家庭點數系統</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="theme-color" content="#16283F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="星星銀行">
+<style>
+  :root{
+    --bg: #EEF3F6; --card: #FFFFFF; --ink: #1E2A38; --ink-soft: #5B6B7C; --line: #DCE4EA;
+    --navy: #223A5E; --navy-deep: #16283F; --gold: #E8A93B; --gold-soft: #FBEBCB;
+    --teal: #0E8074; --teal-soft: #DCF3EF; --coral: #D65B4A; --coral-soft: #FBE4E0; --radius: 16px;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; font-family: -apple-system, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif; background: var(--bg); color: var(--ink); -webkit-font-smoothing:antialiased; }
+  .app{ max-width: 880px; margin: 0 auto; min-height:100vh; display:flex; flex-direction:column;}
+  header.top{ background: linear-gradient(135deg, var(--navy-deep), var(--navy)); color:#fff; padding: 18px 20px 16px; border-radius: 0 0 22px 22px; box-shadow: 0 4px 18px rgba(20,35,55,.18); }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand .mark{ width:34px;height:34px;border-radius:10px; background: var(--gold); display:flex;align-items:center;justify-content:center; font-size:18px; flex-shrink:0; }
+  .brand h1{ font-size:17px; margin:0; letter-spacing:.02em; font-weight:700;}
+  .brand .sub{ font-size:11.5px; color:#B9C8DA; margin-top:1px;}
+  .sync-dot{ display:inline-flex; align-items:center; gap:5px; font-size:10.5px; color:#9FB4CC; margin-top:8px; }
+  .sync-dot .d{ width:6px;height:6px;border-radius:50%; background:#5FD1A6; }
+  .sync-dot.offline .d{ background:#D65B4A; }
+  .account-row{ margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  select.acct-select{ flex:1; min-width:150px; background: rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.25); border-radius:10px; padding:9px 10px; font-size:14px; font-weight:600; }
+  select.acct-select option{ color:#111; }
+  .role-pill{ font-size:11px; padding:4px 10px; border-radius:20px; font-weight:700; white-space:nowrap; }
+  .role-pill.parent{ background: var(--gold-soft); color:#7A5312; }
+  .role-pill.child{ background: var(--teal-soft); color:#0A5850; }
+  .balance-strip{ display:flex; gap:10px; margin-top:14px; }
+  .bal-box{ flex:1; background: rgba(255,255,255,.08); border-radius:12px; padding:10px 12px; }
+  .bal-box .label{ font-size:11px; color:#B9C8DA; }
+  .bal-box .num{ font-size:20px; font-weight:800; margin-top:2px; }
+  .bal-box.avail .num{ color: var(--gold); }
+  .bal-box.held .num{ color:#8FD9CC; }
+  nav.tabs{ display:flex; gap:6px; padding:12px 16px 0; overflow-x:auto; }
+  nav.tabs button{ border:none; background:transparent; padding:9px 14px; font-size:13.5px; font-weight:700; color: var(--ink-soft); border-radius:10px 10px 0 0; cursor:pointer; white-space:nowrap; }
+  nav.tabs button.active{ background: var(--card); color: var(--navy); }
+  main{ flex:1; padding:16px; }
+  .card{ background: var(--card); border-radius: var(--radius); padding:16px; border:1px solid var(--line); margin-bottom:14px; }
+  .card h2{ font-size:14px; margin:0 0 12px; color:var(--navy); letter-spacing:.02em; }
+  .card h2 .count{ background:var(--coral-soft); color:var(--coral); font-size:11px; padding:2px 8px; border-radius:12px; margin-left:6px; }
+  .empty{ color: var(--ink-soft); font-size:13px; padding: 18px 4px; text-align:center; }
+  .task-item, .rule-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:11px 12px; border:1px solid var(--line); border-radius:12px; margin-bottom:8px; background:#FCFDFE; }
+  .task-item .t-main{ flex:1; }
+  .task-item .t-name{ font-size:14px; font-weight:700; color:var(--ink); }
+  .task-item .t-desc{ font-size:12px; color: var(--ink-soft); margin-top:2px; }
+  .pts{ font-size:13px; font-weight:800; padding:3px 9px; border-radius:20px; white-space:nowrap; }
+  .pts.pos{ background: var(--teal-soft); color: var(--teal); }
+  .pts.neg{ background: var(--coral-soft); color: var(--coral); }
+  .pts.neutral{ background:#EDEFF2; color:var(--ink-soft); }
+  .btn{ border:none; border-radius:9px; padding:8px 13px; font-size:12.5px; font-weight:700; cursor:pointer; }
+  .btn.primary{ background: var(--navy); color:#fff; }
+  .btn.teal{ background: var(--teal); color:#fff; }
+  .btn.coral{ background: var(--coral); color:#fff; }
+  .btn.ghost{ background:#fff; color: var(--navy); border:1px solid var(--line); }
+  .btn.gold{ background: var(--gold); color:#5A3B0A; }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .btn-row{ display:flex; gap:6px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
+  .section-tag{ font-size:11px; font-weight:800; color: var(--navy); text-transform:uppercase; letter-spacing:.06em; margin: 14px 0 8px; display:flex; align-items:center; gap:8px;}
+  .section-tag:first-child{ margin-top:0;}
+  .pending-badge{ font-size:11px; color:var(--gold); font-weight:700; }
+  .shop-grid{ display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+  .shop-card{ border:1px solid var(--line); border-radius:12px; padding:12px; background:#FCFDFE; display:flex; flex-direction:column; gap:6px; }
+  .shop-card .s-name{ font-size:13.5px; font-weight:700; }
+  .shop-card .s-desc{ font-size:11.5px; color:var(--ink-soft); line-height:1.4; min-height:30px; }
+  .shop-card .s-price{ font-size:16px; font-weight:800; color: var(--gold); }
+  .ledger-row{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed var(--line); font-size:13px; }
+  .ledger-row:last-child{ border-bottom:none; }
+  .ledger-row .l-desc{ color:var(--ink); font-weight:600; }
+  .ledger-row .l-meta{ color:var(--ink-soft); font-size:11px; margin-top:1px; }
+  .ledger-row .l-amt.pos{ color:var(--teal); font-weight:800; }
+  .ledger-row .l-amt.neg{ color:var(--coral); font-weight:800; }
+  input[type=text], input[type=number], select.field, textarea{ width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:9px; font-size:13.5px; font-family:inherit; background:#fff; color:var(--ink); }
+  .form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px; }
+  .form-grid.full{ grid-template-columns:1fr; }
+  label.f-label{ font-size:11.5px; color: var(--ink-soft); font-weight:700; display:block; margin-bottom:3px; }
+  .divider{ height:1px; background:var(--line); margin:14px 0; }
+  .child-tab-select{ display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
+  .child-tab-select button{ border:1px solid var(--line); background:#fff; padding:6px 12px; border-radius:20px; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--ink-soft); }
+  .child-tab-select button.active{ background: var(--navy); color:#fff; border-color:var(--navy); }
+  .toast{ position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background: var(--navy-deep); color:#fff; padding:10px 18px; border-radius:30px; font-size:13px; font-weight:600; box-shadow:0 6px 20px rgba(0,0,0,.25); z-index:50; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
+  .loading-wrap{ display:flex; align-items:center; justify-content:center; padding:60px 0; color:var(--ink-soft); font-size:13px; }
+  .batch-tag{ font-size:10px; padding:2px 7px; border-radius:8px; font-weight:700; margin-left:6px;}
+  .batch-tag.b1{ background:#DDEBF7; color:#1D4E7A; }
+  .batch-tag.b2{ background:#FCE4D6; color:#8A4416; }
+  small.hint{ color: var(--ink-soft); font-size:11.5px; }
+  .cal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .cal-head .cal-title{ font-size:15px; font-weight:800; color:var(--navy); }
+  .cal-nav{ display:flex; gap:6px; }
+  .cal-nav button{ border:1px solid var(--line); background:#fff; border-radius:8px; width:30px; height:30px; font-size:14px; cursor:pointer; color:var(--navy); }
+  .cal-nav button.today-btn{ width:auto; padding:0 10px; font-size:12px; font-weight:700; }
+  .weekday-row{ display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:11px; color:var(--ink-soft); font-weight:700; margin-bottom:4px; }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .cal-cell{ aspect-ratio:1/1; border-radius:10px; border:1px solid transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; font-size:13px; background:#F7F9FB; color:var(--ink); }
+  .cal-cell.blank{ background:transparent; cursor:default; }
+  .cal-cell .dnum{ font-weight:700; }
+  .cal-cell .dot{ width:6px; height:6px; border-radius:50%; margin-top:3px; }
+  .cal-cell.today{ border:2px solid var(--gold); }
+  .cal-cell.today::after{ content:"★"; position:absolute; top:2px; right:4px; font-size:9px; color:var(--gold); }
+  .cal-cell.selected{ background: var(--navy); color:#fff; }
+  .cal-cell.selected .dnum{ color:#fff; }
+  .cal-cell.incomplete-mark::before{ content:"!"; position:absolute; top:2px; left:5px; font-size:9px; font-weight:900; color:var(--coral); }
+  .daytype-legend{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; font-size:11px; color:var(--ink-soft); }
+  .daytype-legend span{ display:inline-flex; align-items:center; gap:4px; }
+  .daytype-legend .dot{ width:7px; height:7px; border-radius:50%; display:inline-block; }
+  .date-detail-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+  .date-detail-head .ddate{ font-size:15px; font-weight:800; color:var(--navy); }
+  .status-chip{ font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; }
+  .status-chip.done{ background:var(--teal-soft); color:var(--teal); }
+  .status-chip.pending{ background:var(--gold-soft); color:#7A5312; }
+  .status-chip.missing{ background:var(--coral-soft); color:var(--coral); }
+  .status-chip.future{ background:#EDEFF2; color:var(--ink-soft); }
+  .note-card{ background:#F7F5EE; border:1px dashed #DDD3B8; border-radius:12px; padding:10px 12px; font-size:13px; color:#6B5B2E; margin-bottom:8px; }
+</style>
+</head>
+<body>
+<div class="app" id="app"><div class="loading-wrap">連線到家庭資料庫中…</div></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+/* ---------------- Firebase 初始化 ---------------- */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCIUrtN60FK_NkxrGFdRKM1DTZhUAiyhB4",
+  authDomain: "shop-5739f.firebaseapp.com",
+  projectId: "shop-5739f",
+  storageBucket: "shop-5739f.firebasestorage.app",
+  messagingSenderId: "357400325878",
+  appId: "1:357400325878:web:4958e018648217e29ac6d7",
+  measurementId: "G-P25CX1EX1H"
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+const STATE_DOC = doc(db, "familyApp", "state");
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{ navigator.serviceWorker.register("./sw.js").catch(()=>{}); });
+}
+
+/* ---------------- 資料模型 ---------------- */
+const DEVICE_KEY = "star_bank_current_account_id";
+let state = null;
+let currentAccountId = null;
+let activeTab = null;
+let childViewFilter = null;
+let calMonth = null;
+let selectedDate = null;
+let isOnline = true;
+let suppressNextSnapshot = false;
+
+function uid(prefix){ return prefix + "_" + Math.random().toString(36).slice(2,9); }
+function pad2(n){ return String(n).padStart(2,"0"); }
+function toDateStr(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+function todayStr(){ return toDateStr(new Date()); }
+function parseDateStr(s){ const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
+const WEEKDAY_LABELS = ["日","一","二","三","四","五","六"];
+const DT_SCHOOL = "dt_school", DT_HOLIDAY = "dt_holiday", DT_BIRTHDAY = "dt_birthday", DT_SPECIAL = "dt_special";
+
+function defaultState(){
+  const dad = { id: uid("acc"), name: "爸爸", role: "parent" };
+  const mom = { id: uid("acc"), name: "媽媽", role: "parent" };
+  const kid = { id: uid("acc"), name: "女兒", role: "child" };
+  return {
+    accounts: [dad, mom, kid],
+    dayTypes: [
+      { id: DT_SCHOOL, name: "上學日", color:"#2E6BB0", steps: [
+        {id:uid("st"), name:"起床", desc:"", points:1, type:"task", order:1},
+        {id:uid("st"), name:"刷牙", desc:"", points:1, type:"task", order:2},
+        {id:uid("st"), name:"穿襪子", desc:"", points:1, type:"task", order:3},
+        {id:uid("st"), name:"穿鞋子", desc:"", points:1, type:"task", order:4}
+      ]},
+      { id: DT_HOLIDAY, name: "放假日", color:"#0E8074", steps: [
+        {id:uid("st"), name:"電視時間 1H", desc:"當天可使用的自由時間，不需審核", points:0, type:"note", order:1}
+      ]},
+      { id: DT_BIRTHDAY, name: "生日", color:"#D6A93B", steps: [
+        {id:uid("st"), name:"今天是生日，不用做例行任務", desc:"好好慶祝這一天", points:0, type:"note", order:1}
+      ]},
+      { id: DT_SPECIAL, name: "特殊日子", color:"#8A5FBF", steps: [] }
+    ],
+    dateAssignments: {},
+    dayLog: {},
+    rules: {
+      extra: [
+        {id:uid("r"), name:"專心做一件事5分鐘", desc:"拼圖、畫畫、積木不中斷", points:2, batch:"第二批"},
+        {id:uid("r"), name:"主動幫忙", desc:"拿東西、擦桌子", points:1, batch:"第二批"},
+        {id:uid("r"), name:"動一動", desc:"跳舞、追跑、丟球10分鐘", points:2, batch:"第二批"},
+        {id:uid("r"), name:"說出感受", desc:"用說的代替哭鬧", points:2, batch:"第二批"},
+        {id:uid("r"), name:"聽一次指令就做", desc:"不用講第二次", points:2, batch:"第二批"},
+        {id:uid("r"), name:"分享／輪流", desc:"玩具、點心願意分", points:2, batch:"第二批"}
+      ],
+      deduction: [
+        {id:uid("r"), name:"哭鬧不聽", desc:"平靜等她冷靜後才處理", points:1, batch:"第二批"},
+        {id:uid("r"), name:"動手打人/推人", desc:"立即制止＋說明原因", points:2, batch:"第二批"},
+        {id:uid("r"), name:"故意破壞物品", desc:"生氣摔東西", points:1, batch:"第二批"},
+        {id:uid("r"), name:"說了3次仍不動作", desc:"先確認她有聽到、聽懂", points:1, batch:"第二批"}
+      ],
+      rewards: [
+        {id:uid("r"), name:"選一集卡通", desc:"當天晚上看", points:3, batch:"第二批"},
+        {id:uid("r"), name:"貼紙變小圖案", desc:"畫在手背上", points:3, batch:"第二批"},
+        {id:uid("r"), name:"睡前多一本故事", desc:"爸媽多唸一本", points:5, batch:"第二批"},
+        {id:uid("r"), name:"公園玩久一點", desc:"多留15分鐘", points:8, batch:"第二批"},
+        {id:uid("r"), name:"小玩具/貼紙本", desc:"NT$100內自選", points:10, batch:"第二批"},
+        {id:uid("r"), name:"全家出去玩半天", desc:"動物園、遊樂園等", points:15, batch:"第二批"}
+      ]
+    },
+    ledger: { [kid.id]: [] },
+    pendingTasks: [],
+    pendingRedemptions: []
+  };
+}
+
+/* ---------------- Firestore 存取層 ---------------- */
+async function loadState(){
+  try{
+    const snap = await getDoc(STATE_DOC);
+    if(snap.exists()){ state = snap.data().payload ? JSON.parse(snap.data().payload) : defaultState(); }
+    else { state = defaultState(); await saveState(); }
+  }catch(e){
+    console.error(e);
+    state = defaultState();
+  }
+  if(!state.dayTypes) state.dayTypes = defaultState().dayTypes;
+  if(!state.dateAssignments) state.dateAssignments = {};
+  if(!state.dayLog) state.dayLog = {};
+}
+async function saveState(){
+  try{
+    suppressNextSnapshot = true;
+    await setDoc(STATE_DOC, { payload: JSON.stringify(state), updatedAt: Date.now() });
+    isOnline = true;
+  }catch(e){
+    isOnline = false;
+    showToast("儲存失敗，請檢查網路連線");
+    console.error(e);
+  }
+}
+function startRealtimeSync(){
+  onSnapshot(STATE_DOC, (snap)=>{
+    isOnline = true;
+    if(suppressNextSnapshot){ suppressNextSnapshot = false; return; }
+    if(snap.exists() && snap.data().payload){
+      state = JSON.parse(snap.data().payload);
+      if(!state.dayTypes) state.dayTypes = defaultState().dayTypes;
+      if(!state.dateAssignments) state.dateAssignments = {};
+      if(!state.dayLog) state.dayLog = {};
+      render();
+    }
+  }, (err)=>{ isOnline = false; console.error(err); render(); });
+}
+function getDeviceAccount(){ try{ return localStorage.getItem(DEVICE_KEY); }catch(e){ return null; } }
+function setDeviceAccount(id){ try{ localStorage.setItem(DEVICE_KEY, id); }catch(e){} }
+
+/* ---------------- 帳本輔助 ---------------- */
+function getLedger(accId){ return state.ledger[accId] || []; }
+function ensureLedger(accId){ if(!state.ledger[accId]) state.ledger[accId] = []; }
+function sumLedger(accId){ return getLedger(accId).reduce((s,e)=> s + e.points, 0); }
+function heldPoints(accId){ return state.pendingRedemptions.filter(r=> r.childId===accId && r.status==="held").reduce((s,r)=> s + r.points, 0); }
+function availablePoints(accId){ return sumLedger(accId) - heldPoints(accId); }
+function addLedgerEntry(accId, points, desc, meta){ ensureLedger(accId); state.ledger[accId].push({ id: uid("tx"), ts: Date.now(), points, desc, meta: meta||"" }); }
+
+/* ---------------- 日期／日型輔助 ---------------- */
+function getDayType(id){ return state.dayTypes.find(d=>d.id===id); }
+function getDayTypeIdForDate(dateStr){
+  if(state.dateAssignments[dateStr]) return state.dateAssignments[dateStr];
+  const wd = parseDateStr(dateStr).getDay();
+  return (wd===0 || wd===6) ? DT_HOLIDAY : DT_SCHOOL;
+}
+function getStepLog(dateStr, childId, stepId){ return state.dayLog[dateStr] && state.dayLog[dateStr][childId] ? state.dayLog[dateStr][childId][stepId] : undefined; }
+function setStepLog(dateStr, childId, stepId, entry){
+  if(!state.dayLog[dateStr]) state.dayLog[dateStr] = {};
+  if(!state.dayLog[dateStr][childId]) state.dayLog[dateStr][childId] = {};
+  state.dayLog[dateStr][childId][stepId] = entry;
+}
+function dateHasIncomplete(dateStr, childId){
+  const dt = getDayType(getDayTypeIdForDate(dateStr));
+  if(!dt) return false;
+  if(dateStr >= todayStr()) return false;
+  return dt.steps.some(s=> s.type==="task" && (!getStepLog(dateStr, childId, s.id) || getStepLog(dateStr, childId, s.id).status==="rejected"));
+}
+
+/* ---------------- UI 輔助 ---------------- */
+function showToast(msg){ const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(showToast._h); showToast._h = setTimeout(()=> t.classList.remove("show"), 2200); }
+function fmtTime(ts){ const d = new Date(ts); return `${d.getMonth()+1}/${d.getDate()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+function fmtDateFull(dateStr){ const d = parseDateStr(dateStr); return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 星期${WEEKDAY_LABELS[d.getDay()]}`; }
+function getAccount(id){ return state.accounts.find(a=>a.id===id); }
+function currentAccount(){ return getAccount(currentAccountId); }
+function children(){ return state.accounts.filter(a=>a.role==="child"); }
+async function persistAndRender(){ await saveState(); render(); }
+
+/* ---------------- 事件：日曆步驟回報／審核 ---------------- */
+async function submitStep(dateStr, childId, stepId){
+  const dt = getDayType(getDayTypeIdForDate(dateStr));
+  const step = dt.steps.find(s=>s.id===stepId); if(!step) return;
+  setStepLog(dateStr, childId, stepId, {status:"pending", ts: Date.now()});
+  showToast(`已送出「${step.name}」，等待爸媽審核`);
+  await persistAndRender();
+}
+async function approveStep(dateStr, childId, stepId){
+  const dt = getDayType(getDayTypeIdForDate(dateStr));
+  const step = dt.steps.find(s=>s.id===stepId); if(!step) return;
+  setStepLog(dateStr, childId, stepId, {status:"approved", ts: Date.now()});
+  if(step.points) addLedgerEntry(childId, step.points, `${dt.name}｜${step.name}`, dateStr);
+  showToast(`已核准「${step.name}」`);
+  await persistAndRender();
+}
+async function rejectStep(dateStr, childId, stepId){
+  const dt = getDayType(getDayTypeIdForDate(dateStr));
+  const step = dt.steps.find(s=>s.id===stepId); if(!step) return;
+  setStepLog(dateStr, childId, stepId, {status:"rejected", ts: Date.now()});
+  showToast(`已標記「${step.name}」未完成`);
+  await persistAndRender();
+}
+async function approveAllSteps(dateStr, childId){
+  const dt = getDayType(getDayTypeIdForDate(dateStr));
+  let n = 0;
+  dt.steps.filter(s=>s.type==="task").forEach(s=>{
+    const log = getStepLog(dateStr, childId, s.id);
+    if(log && log.status==="pending"){
+      setStepLog(dateStr, childId, s.id, {status:"approved", ts: Date.now()});
+      if(s.points) addLedgerEntry(childId, s.points, `${dt.name}｜${s.name}`, dateStr);
+      n++;
+    }
+  });
+  showToast(n>0 ? `已核准 ${n} 項` : "沒有待審核的項目");
+  await persistAndRender();
+}
+async function setDateAssignment(dateStr, dayTypeId){
+  if(dayTypeId){ state.dateAssignments[dateStr] = dayTypeId; } else { delete state.dateAssignments[dateStr]; }
+  showToast("已更新這天的日期類型");
+  await persistAndRender();
+}
+
+/* ---------------- 其他事件 ---------------- */
+async function applyDeduction(childId, ruleId){
+  const rule = state.rules.deduction.find(r=>r.id===ruleId); if(!rule) return;
+  addLedgerEntry(childId, -Math.abs(rule.points), rule.name, "家長扣點");
+  showToast(`已扣除「${rule.name}」-${Math.abs(rule.points)}點`);
+  await persistAndRender();
+}
+async function submitExtra(ruleId){
+  const rule = state.rules.extra.find(r=>r.id===ruleId); if(!rule) return;
+  state.pendingTasks.push({ id: uid("pt"), childId: currentAccountId, ruleId, ruleName: rule.name, points: rule.points, ts: Date.now(), status:"pending" });
+  showToast(`已送出「${rule.name}」，等待爸媽審核`);
+  await persistAndRender();
+}
+async function approveTask(taskId){
+  const t = state.pendingTasks.find(x=>x.id===taskId); if(!t || t.status!=="pending") return;
+  t.status = "approved"; addLedgerEntry(t.childId, t.points, t.ruleName, "額外活動核准");
+  showToast(`已核准「${t.ruleName}」+${t.points}點`);
+  await persistAndRender();
+}
+async function rejectTask(taskId){
+  const t = state.pendingTasks.find(x=>x.id===taskId); if(!t || t.status!=="pending") return;
+  t.status = "rejected"; showToast(`已拒絕「${t.ruleName}」`);
+  await persistAndRender();
+}
+async function approveAllTasks(childId){
+  const list = state.pendingTasks.filter(t=>t.childId===childId && t.status==="pending");
+  list.forEach(t=>{ t.status = "approved"; addLedgerEntry(t.childId, t.points, t.ruleName, "額外活動核准（全部核准）"); });
+  showToast(`已全部核准 ${list.length} 項`);
+  await persistAndRender();
+}
+async function requestRedeem(rewardId){
+  const rule = state.rules.rewards.find(r=>r.id===rewardId); if(!rule) return;
+  if(availablePoints(currentAccountId) < rule.points){ showToast("點數不足，還不能兌換這個獎勵"); return; }
+  state.pendingRedemptions.push({ id: uid("pr"), childId: currentAccountId, rewardId, rewardName: rule.name, points: rule.points, ts: Date.now(), status:"held" });
+  showToast(`「${rule.name}」已送出兌換申請，點數先移入保留區`);
+  await persistAndRender();
+}
+async function completeRedeem(redId){
+  const r = state.pendingRedemptions.find(x=>x.id===redId); if(!r || r.status!=="held") return;
+  r.status = "completed"; addLedgerEntry(r.childId, -r.points, r.rewardName, "兌換完成扣點");
+  showToast(`已完成兌換「${r.rewardName}」，扣除${r.points}點`);
+  await persistAndRender();
+}
+async function cancelRedeem(redId){
+  const r = state.pendingRedemptions.find(x=>x.id===redId); if(!r || r.status!=="held") return;
+  r.status = "cancelled"; showToast(`已取消兌換「${r.rewardName}」，點數退回可用餘額`);
+  await persistAndRender();
+}
+async function addAccount(name, role){
+  if(!name || !name.trim()) return;
+  const acc = { id: uid("acc"), name: name.trim(), role };
+  state.accounts.push(acc);
+  if(role==="child") ensureLedger(acc.id);
+  showToast(`已新增帳號「${acc.name}」`);
+  await persistAndRender();
+}
+async function removeAccount(accId){
+  if(accId===currentAccountId){ showToast("無法刪除目前登入中的帳號"); return; }
+  state.accounts = state.accounts.filter(a=>a.id!==accId);
+  showToast("已刪除帳號（歷史帳本仍保留）");
+  await persistAndRender();
+}
+async function addRule(type, name, desc, points, batch){
+  if(!name || !name.trim()) return;
+  state.rules[type].push({ id: uid("r"), name: name.trim(), desc: (desc||"").trim(), points: Number(points)||0, batch: batch||"自訂" });
+  showToast("已新增規則");
+  await persistAndRender();
+}
+async function removeRule(type, ruleId){
+  state.rules[type] = state.rules[type].filter(r=>r.id!==ruleId);
+  showToast("已刪除規則（不影響已產生的帳本紀錄）");
+  await persistAndRender();
+}
+async function addDayTypeStep(dayTypeId, name, points, type){
+  const dt = getDayType(dayTypeId); if(!dt || !name || !name.trim()) return;
+  dt.steps.push({ id: uid("st"), name: name.trim(), desc:"", points: Number(points)||0, type: type||"task", order: dt.steps.length+1 });
+  showToast("已新增步驟");
+  await persistAndRender();
+}
+async function removeDayTypeStep(dayTypeId, stepId){
+  const dt = getDayType(dayTypeId); if(!dt) return;
+  dt.steps = dt.steps.filter(s=>s.id!==stepId);
+  showToast("已刪除步驟");
+  await persistAndRender();
+}
+async function addDayType(name){
+  if(!name || !name.trim()) return;
+  state.dayTypes.push({ id: uid("dt"), name: name.trim(), color:"#6B7A8F", steps: [] });
+  showToast("已新增日期類型");
+  await persistAndRender();
+}
+
+/* ---------------- 切換帳號 ---------------- */
+async function switchAccount(accId){
+  currentAccountId = accId;
+  setDeviceAccount(accId);
+  activeTab = "home";
+  const acc = getAccount(accId);
+  childViewFilter = acc.role === "parent" ? (children()[0] ? children()[0].id : null) : null;
+  selectedDate = todayStr();
+  calMonth = new Date();
+  render();
+}
+
+/* ---------------- 主渲染 ---------------- */
+function render(){
+  const app = document.getElementById("app");
+  const acc = currentAccount();
+  if(!acc){ app.innerHTML = `<div class="loading-wrap">找不到帳號，請重新整理</div>`; return; }
+  const isChild = acc.role === "child";
+  const avail = isChild ? availablePoints(acc.id) : null;
+  const held = isChild ? heldPoints(acc.id) : null;
+
+  let html = "";
+  html += `<header class="top">
+    <div class="brand"><div class="mark">⭐</div><div><h1>星星銀行</h1><div class="sub">家庭點數系統</div></div></div>
+    <div class="sync-dot ${isOnline?"":"offline"}"><span class="d"></span>${isOnline? "已連線・即時同步" : "離線中，變更暫存本機"}</div>
+    <div class="account-row">
+      <select class="acct-select" id="acctSelect">
+        ${state.accounts.map(a=> `<option value="${a.id}" ${a.id===acc.id?"selected":""}>${a.name}（${a.role==="parent"?"家長":"孩子"}）</option>`).join("")}
+      </select>
+      <span class="role-pill ${acc.role}">${acc.role==="parent" ? "審核／管理權限" : "自主回報"}</span>
+    </div>`;
+  if(isChild){
+    html += `<div class="balance-strip">
+      <div class="bal-box avail"><div class="label">可用點數</div><div class="num">${avail} ⭐</div></div>
+      <div class="bal-box held"><div class="label">保留中（兌換審核）</div><div class="num">${held} 🔒</div></div>
+    </div>`;
+  }
+  html += `</header>`;
+
+  const tabs = isChild
+    ? [["home","首頁"],["extra","額外活動"],["shop","兌換商店"],["ledger","我的紀錄"]]
+    : [["home","日曆"],["review","待審核"],["deduct","扣點"],["daytypes","日期類型"],["rules","規則管理"],["accounts","帳戶管理"],["overview","家庭總覽"]];
+  if(!activeTab) activeTab = "home";
+
+  html += `<nav class="tabs">${tabs.map(([k,l])=>{
+    let badge = "";
+    if(!isChild && k==="review"){
+      const n = state.pendingTasks.filter(t=>t.status==="pending").length + state.pendingRedemptions.filter(r=>r.status==="held").length + countPendingSteps();
+      if(n>0) badge = ` <span class="pending-badge">●${n}</span>`;
+    }
+    return `<button class="${activeTab===k?"active":""}" data-tab="${k}">${l}${badge}</button>`;
+  }).join("")}</nav>`;
+
+  html += `<main>`;
+  if(isChild){
+    if(activeTab==="home") html += renderCalendarSection(acc, false);
+    else if(activeTab==="extra") html += renderExtraTab(acc);
+    else if(activeTab==="shop") html += renderShopTab(acc);
+    else if(activeTab==="ledger") html += renderLedgerTab(acc);
+  } else {
+    if(activeTab==="home") html += renderCalendarSection(acc, true);
+    else if(activeTab==="review") html += renderReviewTab();
+    else if(activeTab==="deduct") html += renderDeductTab();
+    else if(activeTab==="daytypes") html += renderDayTypesTab();
+    else if(activeTab==="rules") html += renderRulesTab();
+    else if(activeTab==="accounts") html += renderAccountsTab();
+    else if(activeTab==="overview") html += renderOverviewTab();
+  }
+  html += `</main>`;
+  app.innerHTML = html;
+  bindEvents();
+}
+
+function countPendingSteps(){
+  let n = 0;
+  Object.keys(state.dayLog).forEach(date=>{
+    Object.keys(state.dayLog[date]).forEach(childId=>{
+      Object.keys(state.dayLog[date][childId]).forEach(stepId=>{
+        if(state.dayLog[date][childId][stepId].status==="pending") n++;
+      });
+    });
+  });
+  return n;
+}
+
+/* ---------------- 日曆區塊 ---------------- */
+function renderCalendarSection(acc, isParentView){
+  if(!calMonth) calMonth = new Date();
+  if(!selectedDate) selectedDate = todayStr();
+  const targetChildId = isParentView ? (childViewFilter || (children()[0] && children()[0].id)) : acc.id;
+  const y = calMonth.getFullYear(), m = calMonth.getMonth();
+  const firstDay = new Date(y, m, 1);
+  const startWeekday = firstDay.getDay();
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  const monthLabel = `${y}年 ${m+1}月`;
+
+  let html = `<div class="card">`;
+  if(isParentView && children().length>1){
+    html += `<div class="child-tab-select">${children().map(k=>`<button data-action="setChildFilter" data-id="${k.id}" class="${targetChildId===k.id?"active":""}">${k.name}</button>`).join("")}</div>`;
+  }
+  html += `<div class="cal-head"><div class="cal-title">${monthLabel}</div>
+      <div class="cal-nav"><button data-action="calPrev">‹</button><button class="today-btn" data-action="calToday">今天</button><button data-action="calNext">›</button></div>
+    </div>
+    <div class="weekday-row">${WEEKDAY_LABELS.map(w=>`<div>${w}</div>`).join("")}</div>
+    <div class="cal-grid">`;
+  for(let i=0;i<startWeekday;i++) html += `<div class="cal-cell blank"></div>`;
+  for(let d=1; d<=daysInMonth; d++){
+    const dateStr = `${y}-${pad2(m+1)}-${pad2(d)}`;
+    const dtId = getDayTypeIdForDate(dateStr);
+    const dt = getDayType(dtId);
+    const isToday = dateStr === todayStr();
+    const isSelected = dateStr === selectedDate;
+    const incomplete = targetChildId ? dateHasIncomplete(dateStr, targetChildId) : false;
+    html += `<div class="cal-cell ${isToday?"today":""} ${isSelected?"selected":""} ${incomplete?"incomplete-mark":""}" data-action="selectDate" data-date="${dateStr}">
+      <div class="dnum">${d}</div><div class="dot" style="background:${dt?dt.color:'#999'}"></div></div>`;
+  }
+  html += `</div>`;
+  html += `<div class="daytype-legend">${state.dayTypes.map(dt=>`<span><span class="dot" style="background:${dt.color}"></span>${dt.name}</span>`).join("")}${isParentView?'<span>！ 紅色驚嘆號 ＝ 過去有未完成項目</span>':''}</div></div>`;
+  html += renderDateDetail(selectedDate, targetChildId, isParentView);
+  return html;
+}
+function renderDateDetail(dateStr, childId, isParentView){
+  const dtId = getDayTypeIdForDate(dateStr);
+  const dt = getDayType(dtId);
+  const isToday = dateStr === todayStr();
+  const isPast = dateStr < todayStr();
+  const isFuture = dateStr > todayStr();
+  let html = `<div class="card"><div class="date-detail-head"><div class="ddate">${fmtDateFull(dateStr)} ${isToday?"（今天）":""}</div></div>`;
+  if(isParentView){
+    html += `<div class="form-grid full" style="margin-bottom:10px;"><div><label class="f-label">這天的日期類型</label>
+        <select class="field" data-action="changeDateType" data-date="${dateStr}">
+          <option value="">（依平日/假日自動判斷：目前為 ${dt?dt.name:"未設定"}）</option>
+          ${state.dayTypes.map(d=>`<option value="${d.id}" ${state.dateAssignments[dateStr]===d.id?"selected":""}>${d.name}</option>`).join("")}
+        </select></div></div>`;
+  } else {
+    html += `<div class="section-tag">今日類型：<span class="batch-tag b2" style="margin-left:0;">${dt?dt.name:""}</span></div>`;
+  }
+  if(!dt || (dt.steps.length===0)){ html += `<div class="empty">這天還沒有設定任何項目</div></div>`; return html; }
+  if(!childId){ html += `<div class="empty">尚未選擇孩子帳號</div></div>`; return html; }
+
+  dt.steps.slice().sort((a,b)=>a.order-b.order).forEach(step=>{
+    if(step.type==="note"){ html += `<div class="note-card">📌 ${step.name}${step.desc?`｜${step.desc}`:""}</div>`; return; }
+    const log = getStepLog(dateStr, childId, step.id);
+    let chip = "", actionBtns = "";
+    if(log && log.status==="approved"){ chip = `<span class="status-chip done">已完成</span>`; }
+    else if(log && log.status==="pending"){
+      chip = `<span class="status-chip pending">審核中</span>`;
+      if(isParentView) actionBtns = `<button class="btn teal" data-action="approveStep" data-date="${dateStr}" data-child="${childId}" data-id="${step.id}">核准</button>
+        <button class="btn coral" data-action="rejectStep" data-date="${dateStr}" data-child="${childId}" data-id="${step.id}">拒絕</button>`;
+    } else if(log && log.status==="rejected"){
+      chip = `<span class="status-chip missing">未完成</span>`;
+      if(!isParentView && isToday) actionBtns = `<button class="btn primary" data-action="submitStep" data-date="${dateStr}" data-child="${childId}" data-id="${step.id}">重新回報</button>`;
+    } else {
+      if(isFuture){ chip = `<span class="status-chip future">尚未到</span>`; }
+      else if(isPast){ chip = `<span class="status-chip missing">未完成</span>`; }
+      else { chip = `<span class="status-chip pending">待完成</span>`; }
+      if(!isParentView && isToday) actionBtns = `<button class="btn primary" data-action="submitStep" data-date="${dateStr}" data-child="${childId}" data-id="${step.id}">我做到了</button>`;
+    }
+    html += `<div class="task-item"><div class="t-main"><div class="t-name">${step.name}</div>${step.desc?`<div class="t-desc">${step.desc}</div>`:""}</div>
+      <div class="btn-row">${step.points? `<span class="pts pos">+${step.points}</span>` : `<span class="pts neutral">無點數</span>`}${chip}${actionBtns}</div></div>`;
+  });
+  if(isParentView){
+    const hasPending = dt.steps.some(s=>{ const l=getStepLog(dateStr, childId, s.id); return l && l.status==="pending"; });
+    if(hasPending) html += `<button class="btn teal" style="margin-top:6px;" data-action="approveAllSteps" data-date="${dateStr}" data-child="${childId}">全部核准</button>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+/* ---------------- 其他頁籤 ---------------- */
+function renderExtraTab(acc){
+  let html = `<div class="card"><h2>額外活動（隨時可回報）</h2>`;
+  const list = state.rules.extra;
+  if(list.length===0) html += `<div class="empty">目前沒有設定項目</div>`;
+  list.forEach(r=>{
+    const pending = state.pendingTasks.find(t=>t.childId===acc.id && t.ruleId===r.id && t.status==="pending");
+    html += `<div class="task-item"><div class="t-main"><div class="t-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div><div class="t-desc">${r.desc||""}</div></div>
+      <div class="btn-row"><span class="pts pos">+${r.points}</span>${pending? `<button class="btn ghost" disabled>審核中</button>` : `<button class="btn primary" data-action="submitExtra" data-id="${r.id}">我做到了</button>`}</div></div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+function renderShopTab(acc){
+  let html = `<div class="card"><h2>兌換商店 <small class="hint" style="font-weight:400;">目前可用點數：${availablePoints(acc.id)} ⭐</small></h2>`;
+  if(state.rules.rewards.length===0) html += `<div class="empty">尚未設定獎勵</div>`;
+  html += `<div class="shop-grid">`;
+  state.rules.rewards.forEach(r=>{
+    const canAfford = availablePoints(acc.id) >= r.points;
+    html += `<div class="shop-card"><div class="s-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div>
+      <div class="s-desc">${r.desc||""}</div><div class="s-price">${r.points} ⭐</div>
+      <button class="btn gold" ${canAfford?"":"disabled"} data-action="requestRedeem" data-id="${r.id}">${canAfford?"申請兌換":"點數不足"}</button></div>`;
+  });
+  html += `</div></div>`;
+  const mine = state.pendingRedemptions.filter(r=>r.childId===acc.id && r.status==="held");
+  html += `<div class="card"><h2>兌換審核中</h2>`;
+  if(mine.length===0) html += `<div class="empty">目前沒有等待審核的兌換</div>`;
+  mine.forEach(r=>{
+    html += `<div class="task-item"><div class="t-main"><div class="t-name">${r.rewardName}</div><div class="t-desc">送出時間 ${fmtTime(r.ts)}，等待爸媽完成兌換</div></div><span class="pts neg">-${r.points}</span></div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+function renderLedgerTab(acc){
+  const entries = getLedger(acc.id).slice().sort((a,b)=>b.ts-a.ts);
+  let html = `<div class="card"><h2>收支紀錄</h2>`;
+  if(entries.length===0) html += `<div class="empty">還沒有任何紀錄</div>`;
+  entries.forEach(e=>{
+    html += `<div class="ledger-row"><div><div class="l-desc">${e.desc}</div><div class="l-meta">${fmtTime(e.ts)}｜${e.meta||""}</div></div><div class="l-amt ${e.points>=0?"pos":"neg"}">${e.points>=0?"+":""}${e.points}</div></div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+function renderReviewTab(){
+  let html = "";
+  const pendingTasks = state.pendingTasks.filter(t=>t.status==="pending");
+  html += `<div class="card"><h2>額外活動待審核<span class="count">${pendingTasks.length}</span></h2>`;
+  if(pendingTasks.length===0) html += `<div class="empty">目前沒有待審核項目</div>`;
+  const byChild = {};
+  pendingTasks.forEach(t=>{ (byChild[t.childId] = byChild[t.childId]||[]).push(t); });
+  Object.keys(byChild).forEach(cid=>{
+    const c = getAccount(cid);
+    html += `<div class="section-tag">${c?c.name:"未知帳號"} <button class="btn teal" style="padding:4px 10px;font-size:11px;" data-action="approveAllTasks" data-id="${cid}">全部核准</button></div>`;
+    byChild[cid].forEach(t=>{
+      html += `<div class="task-item"><div class="t-main"><div class="t-name">${t.ruleName}</div><div class="t-desc">送出時間 ${fmtTime(t.ts)}</div></div>
+        <div class="btn-row"><span class="pts pos">+${t.points}</span><button class="btn teal" data-action="approveTask" data-id="${t.id}">核准</button><button class="btn coral" data-action="rejectTask" data-id="${t.id}">拒絕</button></div></div>`;
+    });
+  });
+  html += `</div>`;
+  const pendingRed = state.pendingRedemptions.filter(r=>r.status==="held");
+  html += `<div class="card"><h2>兌換待完成<span class="count">${pendingRed.length}</span></h2>`;
+  if(pendingRed.length===0) html += `<div class="empty">目前沒有待處理的兌換申請</div>`;
+  pendingRed.forEach(r=>{
+    const c = getAccount(r.childId);
+    html += `<div class="task-item"><div class="t-main"><div class="t-name">${c?c.name:""} · ${r.rewardName}</div><div class="t-desc">申請時間 ${fmtTime(r.ts)}，點數已在保留區</div></div>
+      <div class="btn-row"><span class="pts neg">-${r.points}</span><button class="btn teal" data-action="completeRedeem" data-id="${r.id}">已完成兌換</button><button class="btn coral" data-action="cancelRedeem" data-id="${r.id}">取消</button></div></div>`;
+  });
+  html += `</div>`;
+  const pendingStepsCount = countPendingSteps();
+  html += `<div class="card"><h2>日曆任務待審核<span class="count">${pendingStepsCount}</span></h2><div class="empty" style="padding:8px 4px;">請至「日曆」頁點選對應日期進行審核</div></div>`;
+  return html;
+}
+function renderDeductTab(){
+  const kids = children();
+  let html = `<div class="card"><h2>手動扣點</h2>`;
+  if(kids.length===0){ html += `<div class="empty">尚未新增孩子帳號</div></div>`; return html; }
+  html += `<div class="child-tab-select">${kids.map(k=>`<button data-action="setChildFilter" data-id="${k.id}" class="${childViewFilter===k.id?"active":""}">${k.name}</button>`).join("")}</div>`;
+  const target = childViewFilter || kids[0].id;
+  state.rules.deduction.forEach(r=>{
+    html += `<div class="task-item"><div class="t-main"><div class="t-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div><div class="t-desc">${r.desc||""}</div></div>
+      <div class="btn-row"><span class="pts neg">-${r.points}</span><button class="btn coral" data-action="applyDeduction" data-child="${target}" data-id="${r.id}">扣點</button></div></div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+function renderDayTypesTab(){
+  let html = "";
+  state.dayTypes.forEach(dt=>{
+    html += `<div class="card"><h2><span class="dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${dt.color};margin-right:6px;"></span>${dt.name}</h2>`;
+    dt.steps.slice().sort((a,b)=>a.order-b.order).forEach(s=>{
+      html += `<div class="rule-row"><div class="t-main"><div class="t-name">${s.name} ${s.type==="note"?'<span class="batch-tag b2">提醒（不需審核）</span>':''}</div>${s.desc?`<div class="t-desc">${s.desc}</div>`:""}</div>
+        <div class="btn-row">${s.points?`<span class="pts pos">+${s.points}</span>`:`<span class="pts neutral">無點數</span>`}<button class="btn ghost" data-action="removeDayTypeStep" data-daytype="${dt.id}" data-id="${s.id}">刪除</button></div></div>`;
+    });
+    html += `<div class="divider"></div><div class="form-grid">
+        <div><label class="f-label">步驟名稱</label><input type="text" id="new_step_${dt.id}_name" placeholder="例如：穿外套"></div>
+        <div><label class="f-label">點數（提醒類填0）</label><input type="number" id="new_step_${dt.id}_points" placeholder="1"></div></div>
+      <div class="form-grid"><div><label class="f-label">類型</label><select class="field" id="new_step_${dt.id}_type"><option value="task">需回報／審核</option><option value="note">僅提醒（不需審核）</option></select></div>
+        <div style="align-self:flex-end;"><button class="btn primary" style="width:100%;" data-action="addDayTypeStep" data-daytype="${dt.id}">新增步驟</button></div></div></div>`;
+  });
+  html += `<div class="card"><h2>新增日期類型</h2>
+    <div class="form-grid full"><div><label class="f-label">類型名稱</label><input type="text" id="new_daytype_name" placeholder="例如：旅行日"></div></div>
+    <button class="btn primary" data-action="addDayType">新增類型</button><div class="divider"></div>
+    <small class="hint">在「日曆」頁點選某一天，就可以把那天指定為這裡任一種類型。沒有特別指定的日子，平日自動視為「上學日」、週末自動視為「放假日」。</small></div>`;
+  return html;
+}
+function renderRulesTab(){
+  let html = "";
+  [["extra","額外活動"],["deduction","扣點規則"],["rewards","兌換獎勵"]].forEach(([type,label])=>{
+    html += `<div class="card"><h2>${label}</h2>`;
+    state.rules[type].forEach(r=>{
+      html += `<div class="rule-row"><div class="t-main"><div class="t-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div><div class="t-desc">${r.desc||""}</div></div>
+        <div class="btn-row"><span class="pts ${type==='deduction'?'neg':'pos'}">${type==='deduction'?'-':'+'}${r.points}</span><button class="btn ghost" data-action="removeRule" data-type="${type}" data-id="${r.id}">刪除</button></div></div>`;
+    });
+    html += `<div class="divider"></div><div class="form-grid">
+        <div><label class="f-label">項目名稱</label><input type="text" id="new_${type}_name" placeholder="例如：主動閱讀"></div>
+        <div><label class="f-label">點數</label><input type="number" id="new_${type}_points" placeholder="2"></div></div>
+      <div class="form-grid full"><div><label class="f-label">說明（選填）</label><input type="text" id="new_${type}_desc" placeholder="補充說明"></div></div>
+      <button class="btn primary" data-action="addRule" data-type="${type}">新增此規則</button></div>`;
+  });
+  return html;
+}
+function renderAccountsTab(){
+  let html = `<div class="card"><h2>家庭成員帳號</h2>`;
+  state.accounts.forEach(a=>{
+    html += `<div class="task-item"><div class="t-main"><div class="t-name">${a.name}</div><div class="t-desc">${a.role==="parent"?"家長（審核／管理權限）":"孩子（自主回報、可兌換獎勵）"}</div></div>
+      <button class="btn ghost" data-action="removeAccount" data-id="${a.id}">刪除</button></div>`;
+  });
+  html += `<div class="divider"></div><div class="form-grid">
+      <div><label class="f-label">姓名</label><input type="text" id="new_acc_name" placeholder="例如：奶奶"></div>
+      <div><label class="f-label">角色</label><select class="field" id="new_acc_role"><option value="child">孩子</option><option value="parent">家長</option></select></div></div>
+    <button class="btn primary" data-action="addAccount">新增帳號</button><div class="divider"></div>
+    <small class="hint">每台裝置各自選擇登入的帳號，資料會即時同步給所有裝置與帳號。</small></div>`;
+  return html;
+}
+function renderOverviewTab(){
+  const kids = children();
+  if(kids.length===0) return `<div class="card"><div class="empty">尚未新增孩子帳號</div></div>`;
+  let html = "";
+  kids.forEach(k=>{
+    const avail = availablePoints(k.id), held = heldPoints(k.id);
+    const entries = getLedger(k.id).slice().sort((a,b)=>b.ts-a.ts).slice(0,6);
+    html += `<div class="card"><h2>${k.name} 的帳戶</h2>
+      <div class="balance-strip" style="margin-bottom:12px;">
+        <div class="bal-box avail" style="background:var(--teal-soft);"><div class="label" style="color:var(--teal)">可用點數</div><div class="num" style="color:var(--teal)">${avail} ⭐</div></div>
+        <div class="bal-box held" style="background:var(--gold-soft);"><div class="label" style="color:#7A5312">保留中</div><div class="num" style="color:#7A5312">${held} 🔒</div></div>
+      </div><div class="section-tag">最近紀錄</div>`;
+    if(entries.length===0) html += `<div class="empty">還沒有任何紀錄</div>`;
+    entries.forEach(e=>{
+      html += `<div class="ledger-row"><div><div class="l-desc">${e.desc}</div><div class="l-meta">${fmtTime(e.ts)}</div></div><div class="l-amt ${e.points>=0?"pos":"neg"}">${e.points>=0?"+":""}${e.points}</div></div>`;
+    });
+    html += `</div>`;
+  });
+  return html;
+}
+
+/* ---------------- 事件綁定 ---------------- */
+function bindEvents(){
+  const acctSelect = document.getElementById("acctSelect");
+  if(acctSelect) acctSelect.addEventListener("change", (e)=> switchAccount(e.target.value));
+  document.querySelectorAll("nav.tabs button").forEach(btn=>{ btn.addEventListener("click", ()=>{ activeTab = btn.dataset.tab; render(); }); });
+  const dtSelect = document.querySelector('[data-action="changeDateType"]');
+  if(dtSelect) dtSelect.addEventListener("change", async (e)=>{ await setDateAssignment(e.target.dataset.date, e.target.value); });
+
+  document.querySelectorAll("[data-action]").forEach(el=>{
+    const action = el.dataset.action;
+    if(action==="changeDateType") return;
+    el.addEventListener("click", async ()=>{
+      try{
+        if(action==="selectDate"){ selectedDate = el.dataset.date; render(); return; }
+        if(action==="calPrev"){ calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth()-1, 1); render(); return; }
+        if(action==="calNext"){ calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth()+1, 1); render(); return; }
+        if(action==="calToday"){ calMonth = new Date(); selectedDate = todayStr(); render(); return; }
+        if(action==="setChildFilter"){ childViewFilter = el.dataset.id; render(); return; }
+
+        if(action==="submitStep") await submitStep(el.dataset.date, el.dataset.child, el.dataset.id);
+        else if(action==="approveStep") await approveStep(el.dataset.date, el.dataset.child, el.dataset.id);
+        else if(action==="rejectStep") await rejectStep(el.dataset.date, el.dataset.child, el.dataset.id);
+        else if(action==="approveAllSteps") await approveAllSteps(el.dataset.date, el.dataset.child);
+        else if(action==="submitExtra") await submitExtra(el.dataset.id);
+        else if(action==="approveTask") await approveTask(el.dataset.id);
+        else if(action==="rejectTask") await rejectTask(el.dataset.id);
+        else if(action==="approveAllTasks") await approveAllTasks(el.dataset.id);
+        else if(action==="applyDeduction") await applyDeduction(el.dataset.child, el.dataset.id);
+        else if(action==="requestRedeem") await requestRedeem(el.dataset.id);
+        else if(action==="completeRedeem") await completeRedeem(el.dataset.id);
+        else if(action==="cancelRedeem") await cancelRedeem(el.dataset.id);
+        else if(action==="removeAccount") await removeAccount(el.dataset.id);
+        else if(action==="removeRule") await removeRule(el.dataset.type, el.dataset.id);
+        else if(action==="removeDayTypeStep") await removeDayTypeStep(el.dataset.daytype, el.dataset.id);
+        else if(action==="addDayType"){ const v = document.getElementById("new_daytype_name").value; await addDayType(v); }
+        else if(action==="addDayTypeStep"){
+          const dtId = el.dataset.daytype;
+          const name = document.getElementById(`new_step_${dtId}_name`).value;
+          const points = document.getElementById(`new_step_${dtId}_points`).value;
+          const type = document.getElementById(`new_step_${dtId}_type`).value;
+          await addDayTypeStep(dtId, name, points, type);
+        }
+        else if(action==="addAccount"){
+          const name = document.getElementById("new_acc_name").value;
+          const role = document.getElementById("new_acc_role").value;
+          await addAccount(name, role);
+        }
+        else if(action==="addRule"){
+          const type = el.dataset.type;
+          const name = document.getElementById(`new_${type}_name`).value;
+          const points = document.getElementById(`new_${type}_points`).value;
+          const desc = document.getElementById(`new_${type}_desc`).value;
+          await addRule(type, name, desc, points, "自訂");
+        }
+      }catch(err){ showToast("操作失敗，請再試一次"); console.error(err); }
+    });
+  });
+}
+
+/* ---------------- 初始化 ---------------- */
+async function init(){
+  await loadState();
+  startRealtimeSync();
+  const remembered = getDeviceAccount();
+  currentAccountId = (remembered && getAccount(remembered)) ? remembered : state.accounts[0].id;
+  const acc = currentAccount();
+  activeTab = "home";
+  if(acc.role === "parent" && children()[0]) childViewFilter = children()[0].id;
+  calMonth = new Date();
+  selectedDate = todayStr();
+  render();
+}
+init();
+</script>
+</body>
+</html>
