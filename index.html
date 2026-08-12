@@ -333,7 +333,11 @@ function ensureLedger(accId){ if(!state.ledger[accId]) state.ledger[accId] = [];
 function sumLedger(accId){ return getLedger(accId).reduce((s,e)=> s + e.points, 0); }
 function heldPoints(accId){ return state.pendingRedemptions.filter(r=> r.childId===accId && r.status==="held").reduce((s,r)=> s + r.points, 0); }
 function availablePoints(accId){ return sumLedger(accId) - heldPoints(accId); }
-function addLedgerEntry(accId, points, desc, meta){ ensureLedger(accId); state.ledger[accId].push({ id: uid("tx"), ts: Date.now(), points, desc, meta: meta||"" }); }
+function addLedgerEntry(accId, points, desc, meta){
+  ensureLedger(accId);
+  const actor = getAccount(currentAccountId);
+  state.ledger[accId].push({ id: uid("tx"), ts: Date.now(), points, desc, meta: meta||"", actorId: currentAccountId||"", actorName: actor ? actor.name : "" });
+}
 
 /* ---------------- 日期／日型輔助 ---------------- */
 function getDayType(id){ return state.dayTypes.find(d=>d.id===id); }
@@ -692,15 +696,42 @@ function bindLoginEvents(){
 }
 
 function countPendingSteps(){
-  let n = 0;
+  return getPendingCalendarSteps().length;
+}
+function getPendingCalendarSteps(){
+  const list = [];
   Object.keys(state.dayLog).forEach(date=>{
     Object.keys(state.dayLog[date]).forEach(childId=>{
       Object.keys(state.dayLog[date][childId]).forEach(stepId=>{
-        if(state.dayLog[date][childId][stepId].status==="pending") n++;
+        const log = state.dayLog[date][childId][stepId];
+        if(log.status!=="pending") return;
+        const dt = getDayType(getDayTypeIdForDate(date));
+        const step = dt ? dt.steps.find(s=>s.id===stepId) : null;
+        list.push({
+          date, childId, stepId,
+          stepName: step ? step.name : "（項目已刪除）",
+          points: step ? step.points : 0,
+          dayTypeName: dt ? dt.name : "",
+          ts: log.ts
+        });
       });
     });
   });
-  return n;
+  list.sort((a,b)=> a.date===b.date ? a.ts-b.ts : (a.date < b.date ? -1 : 1));
+  return list;
+}
+async function approveAllPendingStepsForChild(childId){
+  const items = getPendingCalendarSteps().filter(i=>i.childId===childId);
+  let n = 0;
+  items.forEach(i=>{
+    const dt = getDayType(getDayTypeIdForDate(i.date));
+    const step = dt ? dt.steps.find(s=>s.id===i.stepId) : null;
+    setStepLog(i.date, i.childId, i.stepId, {status:"approved", ts: Date.now()});
+    if(step && step.points) addLedgerEntry(i.childId, step.points, `${dt.name}｜${step.name}`, i.date);
+    n++;
+  });
+  showToast(n>0 ? `已核准 ${n} 項日曆任務` : "沒有待審核的日曆任務");
+  await persistAndRender();
 }
 
 /* ---------------- 日曆區塊 ---------------- */
@@ -835,7 +866,7 @@ function renderLedgerTab(acc){
   let html = `<div class="card"><h2>收支紀錄</h2>`;
   if(entries.length===0) html += `<div class="empty">還沒有任何紀錄</div>`;
   entries.forEach(e=>{
-    html += `<div class="ledger-row"><div><div class="l-desc">${e.desc}</div><div class="l-meta">${fmtTime(e.ts)}｜${e.meta||""}</div></div><div class="l-amt ${e.points>=0?"pos":"neg"}">${e.points>=0?"+":""}${e.points}</div></div>`;
+    html += `<div class="ledger-row"><div><div class="l-desc">${e.desc}</div><div class="l-meta">${fmtTime(e.ts)}｜${e.meta||""}${e.actorName?`｜來源：${e.actorName}`:""}</div></div><div class="l-amt ${e.points>=0?"pos":"neg"}">${e.points>=0?"+":""}${e.points}</div></div>`;
   });
   html += `</div>`;
   return html;
@@ -866,8 +897,22 @@ function renderReviewTab(){
       <div class="btn-row"><span class="pts neg">-${r.points}</span><button class="btn teal" data-action="completeRedeem" data-id="${r.id}">已完成兌換</button><button class="btn coral" data-action="cancelRedeem" data-id="${r.id}">取消</button></div></div>`;
   });
   html += `</div>`;
-  const pendingStepsCount = countPendingSteps();
-  html += `<div class="card"><h2>日曆任務待審核<span class="count">${pendingStepsCount}</span></h2><div class="empty" style="padding:8px 4px;">請至「日曆」頁點選對應日期進行審核</div></div>`;
+  const pendingSteps = getPendingCalendarSteps();
+  html += `<div class="card"><h2>日曆任務待審核<span class="count">${pendingSteps.length}</span></h2>`;
+  if(pendingSteps.length===0) html += `<div class="empty">目前沒有待審核的日曆任務</div>`;
+  const byChildSteps = {};
+  pendingSteps.forEach(i=>{ (byChildSteps[i.childId] = byChildSteps[i.childId]||[]).push(i); });
+  Object.keys(byChildSteps).forEach(cid=>{
+    const c = getAccount(cid);
+    html += `<div class="section-tag">${c?c.name:"未知帳號"} <button class="btn teal" style="padding:4px 10px;font-size:11px;" data-action="approveAllStepsForChild" data-id="${cid}">全部核准</button></div>`;
+    byChildSteps[cid].forEach(i=>{
+      html += `<div class="task-item"><div class="t-main"><div class="t-name">${i.stepName}</div><div class="t-desc">${fmtDateFull(i.date)}・${i.dayTypeName}・送出時間 ${fmtTime(i.ts)}</div></div>
+        <div class="btn-row">${i.points?`<span class="pts pos">+${i.points}</span>`:`<span class="pts neutral">無點數</span>`}
+        <button class="btn teal" data-action="approveStep" data-date="${i.date}" data-child="${i.childId}" data-id="${i.stepId}">核准</button>
+        <button class="btn coral" data-action="rejectStep" data-date="${i.date}" data-child="${i.childId}" data-id="${i.stepId}">拒絕</button></div></div>`;
+    });
+  });
+  html += `</div>`;
   return html;
 }
 function renderPointsTab(){
@@ -992,7 +1037,7 @@ function renderOverviewTab(){
       </div><div class="section-tag">最近紀錄</div>`;
     if(entries.length===0) html += `<div class="empty">還沒有任何紀錄</div>`;
     entries.forEach(e=>{
-      html += `<div class="ledger-row"><div><div class="l-desc">${e.desc}</div><div class="l-meta">${fmtTime(e.ts)}</div></div><div class="l-amt ${e.points>=0?"pos":"neg"}">${e.points>=0?"+":""}${e.points}</div></div>`;
+      html += `<div class="ledger-row"><div><div class="l-desc">${e.desc}</div><div class="l-meta">${fmtTime(e.ts)}${e.actorName?`｜來源：${e.actorName}`:""}</div></div><div class="l-amt ${e.points>=0?"pos":"neg"}">${e.points>=0?"+":""}${e.points}</div></div>`;
     });
     html += `</div>`;
   });
@@ -1025,6 +1070,7 @@ function bindEvents(){
         else if(action==="approveStep") await approveStep(el.dataset.date, el.dataset.child, el.dataset.id);
         else if(action==="rejectStep") await rejectStep(el.dataset.date, el.dataset.child, el.dataset.id);
         else if(action==="approveAllSteps") await approveAllSteps(el.dataset.date, el.dataset.child);
+        else if(action==="approveAllStepsForChild") await approveAllPendingStepsForChild(el.dataset.id);
         else if(action==="submitExtra") await submitExtra(el.dataset.id);
         else if(action==="approveTask") await approveTask(el.dataset.id);
         else if(action==="rejectTask") await rejectTask(el.dataset.id);
