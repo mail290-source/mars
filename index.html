@@ -39,12 +39,13 @@
   .role-pill.admin{ background: var(--purple-soft); color:#4A3574; }
   .impersonate-banner{ margin-top:10px; background: rgba(232,169,59,.16); border:1px solid rgba(232,169,59,.4); border-radius:10px; padding:8px 10px; display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:12px; color:#FBEBCB; }
   .impersonate-banner button{ background: var(--gold); color:#5A3B0A; border:none; border-radius:8px; padding:5px 10px; font-size:11.5px; font-weight:700; cursor:pointer; white-space:nowrap; }
-  .balance-strip{ display:flex; gap:10px; margin-top:14px; }
-  .bal-box{ flex:1; background: rgba(255,255,255,.08); border-radius:12px; padding:10px 12px; }
-  .bal-box .label{ font-size:11px; color:#B9C8DA; }
-  .bal-box .num{ font-size:20px; font-weight:800; margin-top:2px; }
-  .bal-box.avail .num{ color: var(--gold); }
-  .bal-box.held .num{ color:#8FD9CC; }
+  .balance-strip{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:14px; }
+  .bal-box{ background: rgba(255,255,255,.08); border-radius:12px; padding:9px 11px; }
+  .bal-box .label{ font-size:10.5px; color:#B9C8DA; }
+  .bal-box .num{ font-size:17px; font-weight:800; margin-top:2px; }
+  .bal-box.gen .num{ color: var(--gold); }
+  .bal-box.spec .num{ color:#F4C64F; }
+  .bal-box.held .num{ color:#8FD9CC; font-size:14px; }
   nav.tabs{ display:flex; gap:6px; padding:12px 16px 0; overflow-x:auto; }
   nav.tabs button{ border:none; background:transparent; padding:9px 14px; font-size:13.5px; font-weight:700; color: var(--ink-soft); border-radius:10px 10px 0 0; cursor:pointer; white-space:nowrap; }
   nav.tabs button.active{ background: var(--card); color: var(--navy); }
@@ -54,11 +55,12 @@
   .card h2 .count{ background:var(--coral-soft); color:var(--coral); font-size:11px; padding:2px 8px; border-radius:12px; margin-left:6px; }
   .empty{ color: var(--ink-soft); font-size:13px; padding: 18px 4px; text-align:center; }
   .task-item, .rule-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:11px 12px; border:1px solid var(--line); border-radius:12px; margin-bottom:8px; background:#FCFDFE; }
-  .task-item .t-main{ flex:1; }
+  .task-item .t-main{ flex:1; min-width:0; }
   .task-item .t-name{ font-size:14px; font-weight:700; color:var(--ink); }
   .task-item .t-desc{ font-size:12px; color: var(--ink-soft); margin-top:2px; }
-  .pts{ font-size:13px; font-weight:800; padding:3px 9px; border-radius:20px; white-space:nowrap; }
-  .pts.pos{ background: var(--teal-soft); color: var(--teal); }
+  .pts{ font-size:12.5px; font-weight:800; padding:3px 9px; border-radius:20px; white-space:nowrap; }
+  .pts.pos.gen{ background: var(--teal-soft); color: var(--teal); }
+  .pts.pos.spec{ background:#FDF3D6; color:#8A6D12; }
   .pts.neg{ background: var(--coral-soft); color: var(--coral); }
   .pts.neutral{ background:#EDEFF2; color:var(--ink-soft); }
   .btn{ border:none; border-radius:9px; padding:8px 13px; font-size:12.5px; font-weight:700; cursor:pointer; }
@@ -69,24 +71,26 @@
   .btn.gold{ background: var(--gold); color:#5A3B0A; }
   .btn.purple{ background: var(--purple); color:#fff; }
   .btn:disabled{ opacity:.4; cursor:not-allowed; }
-  .btn-row{ display:flex; gap:6px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
+  .btn-row{ display:flex; gap:6px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
   .section-tag{ font-size:11px; font-weight:800; color: var(--navy); text-transform:uppercase; letter-spacing:.06em; margin: 14px 0 8px; display:flex; align-items:center; gap:8px;}
   .section-tag:first-child{ margin-top:0;}
   .pending-badge{ font-size:11px; color:var(--gold); font-weight:700; }
-  .shop-grid{ display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+  .shop-grid{ display:grid; grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); gap:10px; }
   .shop-card{ border:1px solid var(--line); border-radius:12px; padding:12px; background:#FCFDFE; display:flex; flex-direction:column; gap:6px; position:relative; }
   .shop-card .s-name{ font-size:13.5px; font-weight:700; }
   .shop-card .s-desc{ font-size:11.5px; color:var(--ink-soft); line-height:1.4; min-height:30px; }
-  .shop-card .s-price{ font-size:16px; font-weight:800; color: var(--gold); }
+  .shop-card .s-price{ font-size:13.5px; font-weight:800; color: var(--gold); display:flex; gap:6px; flex-wrap:wrap; }
   .provider-tag{ display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:8px; background:var(--purple-soft); color:#4A3574; width:fit-content; }
-  .ledger-row{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed var(--line); font-size:13px; }
+  .ledger-row{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed var(--line); font-size:13px; gap:8px; }
   .ledger-row:last-child{ border-bottom:none; }
   .ledger-row .l-desc{ color:var(--ink); font-weight:600; }
   .ledger-row .l-meta{ color:var(--ink-soft); font-size:11px; margin-top:1px; }
   .ledger-row .l-amt.pos{ color:var(--teal); font-weight:800; }
   .ledger-row .l-amt.neg{ color:var(--coral); font-weight:800; }
+  .ledger-row .l-amt.spec{ color:#8A6D12; }
   input[type=text], input[type=number], input[type=password], select.field, textarea{ width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:9px; font-size:13.5px; font-family:inherit; background:#fff; color:var(--ink); }
   .form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px; }
+  .form-grid.three{ grid-template-columns: 1fr 1fr 1fr; }
   .form-grid.full{ grid-template-columns:1fr; }
   label.f-label{ font-size:11.5px; color: var(--ink-soft); font-weight:700; display:block; margin-bottom:3px; }
   .divider{ height:1px; background:var(--line); margin:14px 0; }
@@ -134,6 +138,17 @@
   .login-card .sub{ text-align:center; font-size:12px; color:var(--ink-soft); margin-bottom:20px; }
   .trash-item{ opacity:.9; }
   .days-left{ font-size:11px; color:var(--coral); font-weight:700; }
+  .drag-list .drag-item{ display:flex; align-items:flex-start; }
+  .drag-handle{ cursor:grab; touch-action:none; padding:6px 8px 0 0; color:var(--ink-soft); font-size:17px; flex-shrink:0; user-select:none; line-height:1; }
+  .drag-item.dragging{ opacity:.55; box-shadow:0 8px 18px rgba(20,35,55,.18); background:#fff; }
+  .drag-item.drop-indicator{ border-top:3px solid var(--navy); }
+  .edit-name{ font-size:14px; font-weight:700; color:var(--ink); border:1px solid transparent; background:transparent; padding:4px 6px; border-radius:7px; width:100%; }
+  .edit-name:focus{ border-color:var(--line); background:#fff; outline:none; }
+  .edit-points{ font-size:13px; font-weight:800; text-align:center; border:1px solid var(--line); border-radius:8px; padding:6px 4px; width:60px; }
+  .edit-currency{ font-size:11.5px; border:1px solid var(--line); border-radius:8px; padding:6px 4px; }
+  .cur-badge{ font-size:10px; padding:2px 7px; border-radius:8px; font-weight:700; margin-top:4px; display:inline-block; }
+  .cur-badge.general{ background:var(--teal-soft); color:var(--teal); }
+  .cur-badge.special{ background:#FDF3D6; color:#8A6D12; }
 </style>
 </head>
 <body>
@@ -162,7 +177,7 @@ if("serviceWorker" in navigator){
   window.addEventListener("load", ()=>{ navigator.serviceWorker.register("./sw.js").catch(()=>{}); });
 }
 
-/* ---------------- 密碼雜湊（基本保護，非企業級加密） ---------------- */
+/* ---------------- 密碼雜湊 ---------------- */
 async function sha256Hex(str){
   const enc = new TextEncoder().encode(str);
   const buf = await crypto.subtle.digest("SHA-256", enc);
@@ -172,8 +187,8 @@ async function sha256Hex(str){
 /* ---------------- 資料模型 ---------------- */
 const SESSION_KEY = "star_bank_session_v2";
 let state = null;
-let session = null;          // { accountId, actingAs? }
-let currentAccountId = null; // 目前畫面上顯示的帳號（可能是被管理者假扮的對象）
+let session = null;
+let currentAccountId = null;
 let activeTab = null;
 let childViewFilter = null;
 let calMonth = null;
@@ -190,6 +205,7 @@ function parseDateStr(s){ const [y,m,d]=s.split("-").map(Number); return new Dat
 const WEEKDAY_LABELS = ["日","一","二","三","四","五","六"];
 const DT_SCHOOL = "dt_school", DT_HOLIDAY = "dt_holiday", DT_BIRTHDAY = "dt_birthday", DT_SPECIAL = "dt_special";
 const TRASH_DAYS = 30;
+const CUR_GENERAL = "general", CUR_SPECIAL = "special";
 
 async function defaultStateAsync(){
   const adminId = uid("acc"), dadId = uid("acc"), momId = uid("acc"), kidId = uid("acc");
@@ -201,18 +217,23 @@ async function defaultStateAsync(){
   ];
   return {
     accounts,
+    currencies: [
+      { id: CUR_GENERAL, name: "銅星", symbol: "⭐" },
+      { id: CUR_SPECIAL, name: "金星", symbol: "🌟" }
+    ],
+    exchangeRate: 100, // 1 金星 = 100 銅星（僅限金星換銅星，不可逆）
     dayTypes: [
       { id: DT_SCHOOL, name: "上學日", color:"#2E6BB0", steps: [
-        {id:uid("st"), name:"起床", desc:"", points:1, type:"task", order:1},
-        {id:uid("st"), name:"刷牙", desc:"", points:1, type:"task", order:2},
-        {id:uid("st"), name:"穿襪子", desc:"", points:1, type:"task", order:3},
-        {id:uid("st"), name:"穿鞋子", desc:"", points:1, type:"task", order:4}
+        {id:uid("st"), name:"起床", desc:"", points:1, currency:CUR_GENERAL, type:"task", order:1},
+        {id:uid("st"), name:"刷牙", desc:"", points:1, currency:CUR_GENERAL, type:"task", order:2},
+        {id:uid("st"), name:"穿襪子", desc:"", points:1, currency:CUR_GENERAL, type:"task", order:3},
+        {id:uid("st"), name:"穿鞋子", desc:"", points:1, currency:CUR_GENERAL, type:"task", order:4}
       ]},
       { id: DT_HOLIDAY, name: "放假日", color:"#0E8074", steps: [
-        {id:uid("st"), name:"電視時間 1H", desc:"當天可使用的自由時間，不需審核", points:0, type:"note", order:1}
+        {id:uid("st"), name:"電視時間 1H", desc:"當天可使用的自由時間，不需審核", points:0, currency:CUR_GENERAL, type:"note", order:1}
       ]},
       { id: DT_BIRTHDAY, name: "生日", color:"#D6A93B", steps: [
-        {id:uid("st"), name:"今天是生日，不用做例行任務", desc:"好好慶祝這一天", points:0, type:"note", order:1}
+        {id:uid("st"), name:"今天是生日，不用做例行任務", desc:"好好慶祝這一天", points:0, currency:CUR_GENERAL, type:"note", order:1}
       ]},
       { id: DT_SPECIAL, name: "特殊日子", color:"#8A5FBF", steps: [] }
     ],
@@ -220,29 +241,29 @@ async function defaultStateAsync(){
     dayLog: {},
     rules: {
       extra: [
-        {id:uid("r"), name:"專心做一件事5分鐘", desc:"拼圖、畫畫、積木不中斷", points:2, batch:"第二批"},
-        {id:uid("r"), name:"主動幫忙", desc:"拿東西、擦桌子", points:1, batch:"第二批"},
-        {id:uid("r"), name:"動一動", desc:"跳舞、追跑、丟球10分鐘", points:2, batch:"第二批"},
-        {id:uid("r"), name:"說出感受", desc:"用說的代替哭鬧", points:2, batch:"第二批"},
-        {id:uid("r"), name:"聽一次指令就做", desc:"不用講第二次", points:2, batch:"第二批"},
-        {id:uid("r"), name:"分享／輪流", desc:"玩具、點心願意分", points:2, batch:"第二批"}
+        {id:uid("r"), name:"專心做一件事5分鐘", desc:"拼圖、畫畫、積木不中斷", points:2, currency:CUR_GENERAL, batch:"第二批"},
+        {id:uid("r"), name:"主動幫忙", desc:"拿東西、擦桌子", points:1, currency:CUR_GENERAL, batch:"第二批"},
+        {id:uid("r"), name:"動一動", desc:"跳舞、追跑、丟球10分鐘", points:2, currency:CUR_GENERAL, batch:"第二批"},
+        {id:uid("r"), name:"說出感受", desc:"用說的代替哭鬧", points:2, currency:CUR_GENERAL, batch:"第二批"},
+        {id:uid("r"), name:"聽一次指令就做", desc:"不用講第二次", points:2, currency:CUR_GENERAL, batch:"第二批"},
+        {id:uid("r"), name:"分享／輪流", desc:"玩具、點心願意分", points:2, currency:CUR_GENERAL, batch:"第二批"}
       ],
       deduction: [
-        {id:uid("r"), name:"哭鬧不聽", desc:"平靜等她冷靜後才處理", points:1, batch:"第二批"},
-        {id:uid("r"), name:"動手打人/推人", desc:"立即制止＋說明原因", points:2, batch:"第二批"},
-        {id:uid("r"), name:"故意破壞物品", desc:"生氣摔東西", points:1, batch:"第二批"},
-        {id:uid("r"), name:"說了3次仍不動作", desc:"先確認她有聽到、聽懂", points:1, batch:"第二批"}
+        {id:uid("r"), name:"哭鬧不聽", desc:"平靜等她冷靜後才處理", points:1, currency:CUR_GENERAL, batch:"第二批"},
+        {id:uid("r"), name:"動手打人/推人", desc:"立即制止＋說明原因", points:2, currency:CUR_GENERAL, batch:"第二批"},
+        {id:uid("r"), name:"故意破壞物品", desc:"生氣摔東西", points:1, currency:CUR_GENERAL, batch:"第二批"},
+        {id:uid("r"), name:"說了3次仍不動作", desc:"先確認她有聽到、聽懂", points:1, currency:CUR_GENERAL, batch:"第二批"}
       ],
       rewards: [
-        {id:uid("r"), name:"選一集卡通", desc:"當天晚上看", points:3, batch:"第二批", provider:"common"},
-        {id:uid("r"), name:"貼紙變小圖案", desc:"畫在手背上", points:3, batch:"第二批", provider:"common"},
-        {id:uid("r"), name:"睡前多一本故事", desc:"爸媽多唸一本", points:5, batch:"第二批", provider:"common"},
-        {id:uid("r"), name:"公園玩久一點", desc:"多留15分鐘", points:8, batch:"第二批", provider:"common"},
-        {id:uid("r"), name:"小玩具/貼紙本", desc:"NT$100內自選", points:10, batch:"第二批", provider:"common"},
-        {id:uid("r"), name:"全家出去玩半天", desc:"動物園、遊樂園等", points:15, batch:"第二批", provider:"common"},
-        {id:uid("r"), name:"一小時電視", desc:"全家共同獎勵", points:10, batch:"自訂", provider:"common"},
-        {id:uid("r"), name:"減免三十分鐘抱抱睡", desc:"跟爸爸兌換", points:8, batch:"自訂", provider:dadId},
-        {id:uid("r"), name:"親親抱抱三十秒，不生氣一次", desc:"跟媽媽兌換", points:8, batch:"自訂", provider:momId}
+        {id:uid("r"), name:"選一集卡通", desc:"當天晚上看", costs:{general:3,special:0}, batch:"第二批", provider:"common"},
+        {id:uid("r"), name:"貼紙變小圖案", desc:"畫在手背上", costs:{general:3,special:0}, batch:"第二批", provider:"common"},
+        {id:uid("r"), name:"睡前多一本故事", desc:"爸媽多唸一本", costs:{general:5,special:0}, batch:"第二批", provider:"common"},
+        {id:uid("r"), name:"公園玩久一點", desc:"多留15分鐘", costs:{general:8,special:0}, batch:"第二批", provider:"common"},
+        {id:uid("r"), name:"小玩具/貼紙本", desc:"NT$100內自選", costs:{general:10,special:0}, batch:"第二批", provider:"common"},
+        {id:uid("r"), name:"全家出去玩半天", desc:"動物園、遊樂園等", costs:{general:15,special:0}, batch:"第二批", provider:"common"},
+        {id:uid("r"), name:"一小時電視", desc:"全家共同獎勵", costs:{general:10,special:0}, batch:"自訂", provider:"common"},
+        {id:uid("r"), name:"減免三十分鐘抱抱睡", desc:"跟爸爸兌換", costs:{general:8,special:0}, batch:"自訂", provider:dadId},
+        {id:uid("r"), name:"親親抱抱三十秒，不生氣一次", desc:"跟媽媽兌換", costs:{general:8,special:0}, batch:"自訂", provider:momId}
       ]
     },
     ledger: { [kidId]: [] },
@@ -266,29 +287,10 @@ async function loadState(){
   if(!state.dateAssignments) state.dateAssignments = {};
   if(!state.dayLog) state.dayLog = {};
   if(!state.trash) state.trash = [];
-  const migrated = await migrateAccountsIfNeeded();
+  const migratedAcc = await migrateAccountsIfNeeded();
+  const migratedCur = migrateCurrencyIfNeeded();
   const purged = purgeExpiredTrash();
-  if(migrated || purged) await saveState();
-}
-
-/* 舊版資料升級：補上密碼與主管理者角色，避免舊帳號被鎖在登入畫面外 */
-async function migrateAccountsIfNeeded(){
-  let changed = false;
-  const hasAdmin = state.accounts.some(a=>a.role==="admin");
-  if(!hasAdmin && state.accounts.length>0){
-    state.accounts[0].role = "admin";
-    changed = true;
-  }
-  for(const acc of state.accounts){
-    if(!acc.passwordHash){
-      const def = acc.role==="admin" ? "0000" : acc.role==="parent" ? "1234" : "1111";
-      acc.passwordHash = await sha256Hex(def);
-      changed = true;
-    }
-  }
-  if(!Array.isArray(state.rules.rewards)) state.rules.rewards = [];
-  state.rules.rewards.forEach(r=>{ if(!r.provider){ r.provider = "common"; changed = true; } });
-  return changed;
+  if(migratedAcc || migratedCur || purged) await saveState();
 }
 async function saveState(){
   try{
@@ -318,6 +320,45 @@ function startRealtimeSync(){
 function loadSession(){ try{ const v = localStorage.getItem(SESSION_KEY); return v?JSON.parse(v):null; }catch(e){ return null; } }
 function saveSession(){ try{ if(session) localStorage.setItem(SESSION_KEY, JSON.stringify(session)); else localStorage.removeItem(SESSION_KEY); }catch(e){} }
 
+/* ---------------- 升級遷移 ---------------- */
+async function migrateAccountsIfNeeded(){
+  let changed = false;
+  const hasAdmin = state.accounts.some(a=>a.role==="admin");
+  if(!hasAdmin && state.accounts.length>0){ state.accounts[0].role = "admin"; changed = true; }
+  for(const acc of state.accounts){
+    if(!acc.passwordHash){
+      const def = acc.role==="admin" ? "0000" : acc.role==="parent" ? "1234" : "1111";
+      acc.passwordHash = await sha256Hex(def);
+      changed = true;
+    }
+  }
+  return changed;
+}
+function migrateCurrencyIfNeeded(){
+  let changed = false;
+  if(!state.currencies){ state.currencies = [{id:CUR_GENERAL,name:"銅星",symbol:"⭐"},{id:CUR_SPECIAL,name:"金星",symbol:"🌟"}]; changed = true; }
+  if(state.exchangeRate == null){ state.exchangeRate = 100; changed = true; }
+  ["extra","deduction"].forEach(type=>{
+    state.rules[type].forEach(r=>{ if(!r.currency){ r.currency = CUR_GENERAL; changed = true; } });
+  });
+  state.dayTypes.forEach(dt=>{
+    dt.steps.forEach(s=>{ if(!s.currency){ s.currency = CUR_GENERAL; changed = true; } });
+  });
+  if(!Array.isArray(state.rules.rewards)) state.rules.rewards = [];
+  state.rules.rewards.forEach(r=>{
+    if(!r.costs){ r.costs = { general: r.points||0, special: 0 }; delete r.points; changed = true; }
+    if(!r.provider){ r.provider = "common"; changed = true; }
+  });
+  Object.keys(state.ledger).forEach(cid=>{
+    state.ledger[cid].forEach(e=>{ if(!e.currency){ e.currency = CUR_GENERAL; changed = true; } });
+  });
+  state.pendingTasks.forEach(t=>{ if(!t.currency){ t.currency = CUR_GENERAL; changed = true; } });
+  state.pendingRedemptions.forEach(r=>{
+    if(!r.costs){ r.costs = { general: r.points||0, special: 0 }; delete r.points; changed = true; }
+  });
+  return changed;
+}
+
 /* ---------------- 垃圾桶 ---------------- */
 function purgeExpiredTrash(){
   const cutoff = Date.now() - TRASH_DAYS*24*60*60*1000;
@@ -327,16 +368,30 @@ function purgeExpiredTrash(){
 }
 function daysLeftForTrash(t){ return Math.max(0, TRASH_DAYS - Math.floor((Date.now()-t.deletedAt)/86400000)); }
 
-/* ---------------- 帳本輔助 ---------------- */
+/* ---------------- 貨幣輔助 ---------------- */
+function curMeta(id){ return state.currencies.find(c=>c.id===id) || {id, name:id, symbol:"⭐"}; }
+
+/* ---------------- 帳本輔助（雙貨幣） ---------------- */
 function getLedger(accId){ return state.ledger[accId] || []; }
 function ensureLedger(accId){ if(!state.ledger[accId]) state.ledger[accId] = []; }
-function sumLedger(accId){ return getLedger(accId).reduce((s,e)=> s + e.points, 0); }
-function heldPoints(accId){ return state.pendingRedemptions.filter(r=> r.childId===accId && r.status==="held").reduce((s,r)=> s + r.points, 0); }
-function availablePoints(accId){ return sumLedger(accId) - heldPoints(accId); }
-function addLedgerEntry(accId, points, desc, meta){
+function sumLedger(accId, currency){ return getLedger(accId).filter(e=>(e.currency||CUR_GENERAL)===currency).reduce((s,e)=> s + e.points, 0); }
+function heldPoints(accId, currency){
+  return state.pendingRedemptions.filter(r=> r.childId===accId && r.status==="held").reduce((s,r)=> s + ((r.costs && r.costs[currency]) || 0), 0);
+}
+function availablePoints(accId, currency){ return sumLedger(accId, currency) - heldPoints(accId, currency); }
+function addLedgerEntry(accId, points, desc, meta, currency){
   ensureLedger(accId);
   const actor = getAccount(currentAccountId);
-  state.ledger[accId].push({ id: uid("tx"), ts: Date.now(), points, desc, meta: meta||"", actorId: currentAccountId||"", actorName: actor ? actor.name : "" });
+  state.ledger[accId].push({ id: uid("tx"), ts: Date.now(), points, desc, meta: meta||"", currency: currency||CUR_GENERAL, actorId: currentAccountId||"", actorName: actor ? actor.name : "" });
+}
+function canAffordCosts(accId, costs){
+  return Object.keys(costs).every(cur => (costs[cur]||0) <= 0 || availablePoints(accId, cur) >= costs[cur]);
+}
+function formatCosts(costs){
+  return Object.keys(costs).filter(cur=>costs[cur]>0).map(cur=>{
+    const m = curMeta(cur);
+    return `${costs[cur]} ${m.symbol}${m.name}`;
+  }).join(" + ") || "免費";
 }
 
 /* ---------------- 日期／日型輔助 ---------------- */
@@ -370,6 +425,12 @@ function children(){ return state.accounts.filter(a=>a.role==="child"); }
 function parents(){ return state.accounts.filter(a=>a.role==="parent"); }
 function roleLabel(r){ return r==="admin"?"主管理者":r==="parent"?"家長":"寶貝"; }
 async function persistAndRender(){ await saveState(); render(); }
+function ptsBadge(amount, currency, sign){
+  const m = curMeta(currency);
+  const cls = sign==="neg" ? "neg" : (currency===CUR_SPECIAL ? "spec" : "gen");
+  const prefix = sign==="neg" ? "-" : "+";
+  return `<span class="pts ${sign==='neg'?'neg':'pos '+cls}">${prefix}${amount} ${m.symbol}</span>`;
+}
 
 /* ---------------- 登入／登出／管理者切換 ---------------- */
 async function attemptLogin(accountId, passwordPlain){
@@ -387,11 +448,7 @@ async function attemptLogin(accountId, passwordPlain){
   calMonth = new Date();
   render();
 }
-function logout(){
-  session = null; saveSession();
-  currentAccountId = null; loginError = "";
-  render();
-}
+function logout(){ session = null; saveSession(); currentAccountId = null; loginError = ""; render(); }
 async function adminActAs(accountId){
   if(!session) return;
   session.actingAs = accountId;
@@ -431,10 +488,8 @@ async function submitStep(dateStr, childId, stepId){
 async function approveStep(dateStr, childId, stepId){
   const dt = getDayType(getDayTypeIdForDate(dateStr));
   const step = dt.steps.find(s=>s.id===stepId); if(!step) return;
-  const already = getStepLog(dateStr, childId, stepId);
-  if(already && already.status==="approved") return;
   setStepLog(dateStr, childId, stepId, {status:"approved", ts: Date.now()});
-  if(step.points) addLedgerEntry(childId, step.points, `${dt.name}｜${step.name}`, dateStr);
+  if(step.points) addLedgerEntry(childId, step.points, `${dt.name}｜${step.name}`, dateStr, step.currency||CUR_GENERAL);
   showToast(`已核准「${step.name}」`);
   await persistAndRender();
 }
@@ -452,7 +507,7 @@ async function approveAllSteps(dateStr, childId){
     const log = getStepLog(dateStr, childId, s.id);
     if(log && log.status==="pending"){
       setStepLog(dateStr, childId, s.id, {status:"approved", ts: Date.now()});
-      if(s.points) addLedgerEntry(childId, s.points, `${dt.name}｜${s.name}`, dateStr);
+      if(s.points) addLedgerEntry(childId, s.points, `${dt.name}｜${s.name}`, dateStr, s.currency||CUR_GENERAL);
       n++;
     }
   });
@@ -465,33 +520,74 @@ async function setDateAssignment(dateStr, dayTypeId){
   await persistAndRender();
 }
 
-/* ---------------- 點數：加點／扣點 ---------------- */
-async function grantPoints(childId, points, desc){
+/* ---------------- 待審日曆任務彙整 ---------------- */
+function getPendingCalendarSteps(){
+  const list = [];
+  Object.keys(state.dayLog).forEach(date=>{
+    Object.keys(state.dayLog[date]).forEach(childId=>{
+      Object.keys(state.dayLog[date][childId]).forEach(stepId=>{
+        const log = state.dayLog[date][childId][stepId];
+        if(log.status!=="pending") return;
+        const dt = getDayType(getDayTypeIdForDate(date));
+        const step = dt ? dt.steps.find(s=>s.id===stepId) : null;
+        list.push({ date, childId, stepId, stepName: step?step.name:"（項目已刪除）", points: step?step.points:0, currency: step?(step.currency||CUR_GENERAL):CUR_GENERAL, dayTypeName: dt?dt.name:"", ts: log.ts });
+      });
+    });
+  });
+  list.sort((a,b)=> a.date===b.date ? a.ts-b.ts : (a.date < b.date ? -1 : 1));
+  return list;
+}
+function countPendingSteps(){ return getPendingCalendarSteps().length; }
+async function approveAllPendingStepsForChild(childId){
+  const items = getPendingCalendarSteps().filter(i=>i.childId===childId);
+  items.forEach(i=>{
+    const dt = getDayType(getDayTypeIdForDate(i.date));
+    const step = dt ? dt.steps.find(s=>s.id===i.stepId) : null;
+    setStepLog(i.date, i.childId, i.stepId, {status:"approved", ts: Date.now()});
+    if(step && step.points) addLedgerEntry(i.childId, step.points, `${dt.name}｜${step.name}`, i.date, step.currency||CUR_GENERAL);
+  });
+  showToast(items.length>0 ? `已核准 ${items.length} 項日曆任務` : "沒有待審核的日曆任務");
+  await persistAndRender();
+}
+
+/* ---------------- 點數：加點／扣點／轉換 ---------------- */
+async function grantPoints(childId, points, desc, currency){
   const p = Number(points);
   if(!p || p<=0){ showToast("請輸入大於0的點數"); return; }
   if(!childId){ showToast("請先選擇孩子"); return; }
-  addLedgerEntry(childId, p, (desc && desc.trim()) || "家長加點", "手動加點");
-  showToast(`已加 ${p} 點`);
+  addLedgerEntry(childId, p, (desc && desc.trim()) || "家長加點", "手動加點", currency||CUR_GENERAL);
+  showToast(`已加 ${p} ${curMeta(currency||CUR_GENERAL).name}`);
   await persistAndRender();
 }
 async function applyDeduction(childId, ruleId){
   const rule = state.rules.deduction.find(r=>r.id===ruleId); if(!rule) return;
-  addLedgerEntry(childId, -Math.abs(rule.points), rule.name, "家長扣點");
-  showToast(`已扣除「${rule.name}」-${Math.abs(rule.points)}點`);
+  addLedgerEntry(childId, -Math.abs(rule.points), rule.name, "家長扣點", rule.currency||CUR_GENERAL);
+  showToast(`已扣除「${rule.name}」-${Math.abs(rule.points)} ${curMeta(rule.currency||CUR_GENERAL).name}`);
+  await persistAndRender();
+}
+async function exchangeCurrency(childId, specialAmount){
+  const amt = Number(specialAmount);
+  if(!amt || amt<=0){ showToast("請輸入大於0的金星數量"); return; }
+  if(availablePoints(childId, CUR_SPECIAL) < amt){ showToast("金星不足"); return; }
+  const rate = state.exchangeRate || 100;
+  const gained = amt * rate;
+  addLedgerEntry(childId, -amt, `兌換為${curMeta(CUR_GENERAL).name}`, "點數轉換", CUR_SPECIAL);
+  addLedgerEntry(childId, gained, `由${curMeta(CUR_SPECIAL).name}轉換`, "點數轉換", CUR_GENERAL);
+  showToast(`已將 ${amt} ${curMeta(CUR_SPECIAL).name} 轉換為 ${gained} ${curMeta(CUR_GENERAL).name}`);
   await persistAndRender();
 }
 
 /* ---------------- 其他事件 ---------------- */
 async function submitExtra(ruleId){
   const rule = state.rules.extra.find(r=>r.id===ruleId); if(!rule) return;
-  state.pendingTasks.push({ id: uid("pt"), childId: currentAccountId, ruleId, ruleName: rule.name, points: rule.points, ts: Date.now(), status:"pending" });
+  state.pendingTasks.push({ id: uid("pt"), childId: currentAccountId, ruleId, ruleName: rule.name, points: rule.points, currency: rule.currency||CUR_GENERAL, ts: Date.now(), status:"pending" });
   showToast(`已送出「${rule.name}」，等待審核`);
   await persistAndRender();
 }
 async function approveTask(taskId){
   const t = state.pendingTasks.find(x=>x.id===taskId); if(!t || t.status!=="pending") return;
-  t.status = "approved"; addLedgerEntry(t.childId, t.points, t.ruleName, "額外活動核准");
-  showToast(`已核准「${t.ruleName}」+${t.points}點`);
+  t.status = "approved"; addLedgerEntry(t.childId, t.points, t.ruleName, "額外活動核准", t.currency||CUR_GENERAL);
+  showToast(`已核准「${t.ruleName}」`);
   await persistAndRender();
 }
 async function rejectTask(taskId){
@@ -501,21 +597,23 @@ async function rejectTask(taskId){
 }
 async function approveAllTasks(childId){
   const list = state.pendingTasks.filter(t=>t.childId===childId && t.status==="pending");
-  list.forEach(t=>{ t.status = "approved"; addLedgerEntry(t.childId, t.points, t.ruleName, "額外活動核准（全部核准）"); });
+  list.forEach(t=>{ t.status = "approved"; addLedgerEntry(t.childId, t.points, t.ruleName, "額外活動核准（全部核准）", t.currency||CUR_GENERAL); });
   showToast(`已全部核准 ${list.length} 項`);
   await persistAndRender();
 }
 async function requestRedeem(rewardId){
   const rule = state.rules.rewards.find(r=>r.id===rewardId); if(!rule) return;
-  if(availablePoints(currentAccountId) < rule.points){ showToast("點數不足，還不能兌換這個獎勵"); return; }
-  state.pendingRedemptions.push({ id: uid("pr"), childId: currentAccountId, rewardId, rewardName: rule.name, provider: rule.provider||"common", points: rule.points, ts: Date.now(), status:"held" });
+  const costs = rule.costs || {general: rule.points||0, special:0};
+  if(!canAffordCosts(currentAccountId, costs)){ showToast("點數不足，還不能兌換這個獎勵"); return; }
+  state.pendingRedemptions.push({ id: uid("pr"), childId: currentAccountId, rewardId, rewardName: rule.name, provider: rule.provider||"common", costs, ts: Date.now(), status:"held" });
   showToast(`「${rule.name}」已送出兌換申請，點數先移入保留區`);
   await persistAndRender();
 }
 async function completeRedeem(redId){
   const r = state.pendingRedemptions.find(x=>x.id===redId); if(!r || r.status!=="held") return;
-  r.status = "completed"; addLedgerEntry(r.childId, -r.points, r.rewardName, "兌換完成扣點");
-  showToast(`已完成兌換「${r.rewardName}」，扣除${r.points}點`);
+  r.status = "completed";
+  Object.keys(r.costs).forEach(cur=>{ const amt=r.costs[cur]||0; if(amt>0) addLedgerEntry(r.childId, -amt, r.rewardName, "兌換完成扣點", cur); });
+  showToast(`已完成兌換「${r.rewardName}」`);
   await persistAndRender();
 }
 async function cancelRedeem(redId){
@@ -537,12 +635,18 @@ async function removeAccount(accId){
   showToast("已刪除帳號（歷史帳本仍保留）");
   await persistAndRender();
 }
-async function addRule(type, name, desc, points, batch, provider){
+async function addRule(type, name, desc, points, batch, currency){
   if(!name || !name.trim()) return;
-  const item = { id: uid("r"), name: name.trim(), desc: (desc||"").trim(), points: Number(points)||0, batch: batch||"自訂" };
-  if(type==="rewards") item.provider = provider || "common";
+  const item = { id: uid("r"), name: name.trim(), desc: (desc||"").trim(), points: Number(points)||0, currency: currency||CUR_GENERAL, batch: batch||"自訂" };
   state.rules[type].push(item);
   showToast("已新增規則");
+  await persistAndRender();
+}
+async function addRewardRule(name, desc, generalCost, specialCost, provider){
+  if(!name || !name.trim()) return;
+  const item = { id: uid("r"), name: name.trim(), desc:(desc||"").trim(), costs:{ general: Number(generalCost)||0, special: Number(specialCost)||0 }, batch:"自訂", provider: provider||"common" };
+  state.rules.rewards.push(item);
+  showToast("已新增獎勵");
   await persistAndRender();
 }
 async function removeRule(type, ruleId){
@@ -552,9 +656,9 @@ async function removeRule(type, ruleId){
   showToast("已移到垃圾桶（30天內可復原）");
   await persistAndRender();
 }
-async function addDayTypeStep(dayTypeId, name, points, type){
+async function addDayTypeStep(dayTypeId, name, points, type, currency){
   const dt = getDayType(dayTypeId); if(!dt || !name || !name.trim()) return;
-  dt.steps.push({ id: uid("st"), name: name.trim(), desc:"", points: Number(points)||0, type: type||"task", order: dt.steps.length+1 });
+  dt.steps.push({ id: uid("st"), name: name.trim(), desc:"", points: Number(points)||0, currency: currency||CUR_GENERAL, type: type||"task", order: dt.steps.length+1 });
   showToast("已新增步驟");
   await persistAndRender();
 }
@@ -590,6 +694,89 @@ async function permanentlyDeleteTrash(trashId){
   showToast("已永久刪除");
   await persistAndRender();
 }
+async function updateRuleField(type, ruleId, field, value){
+  const item = state.rules[type].find(r=>r.id===ruleId); if(!item) return;
+  if(field==="points"){ item.points = Number(value)||0; } else { item[field] = value; }
+  await persistAndRender();
+}
+async function updateRewardCost(ruleId, currency, value){
+  const item = state.rules.rewards.find(r=>r.id===ruleId); if(!item) return;
+  if(!item.costs) item.costs = {general:0,special:0};
+  item.costs[currency] = Number(value)||0;
+  await persistAndRender();
+}
+async function updateStepField(dayTypeId, stepId, field, value){
+  const dt = getDayType(dayTypeId); if(!dt) return;
+  const step = dt.steps.find(s=>s.id===stepId); if(!step) return;
+  if(field==="points"){ step.points = Number(value)||0; } else { step[field] = value; }
+  await persistAndRender();
+}
+
+/* ---------------- 拖拉排序 ---------------- */
+let dragCtx = null;
+function resolveDragArray(listKey){
+  if(listKey.startsWith("rules:")){ const t = listKey.split(":")[1]; return state.rules[t]; }
+  if(listKey.startsWith("daytype:")){ const id = listKey.split(":")[1]; const dt = getDayType(id); return dt ? dt.steps : null; }
+  return null;
+}
+function initDragReorder(){
+  document.querySelectorAll(".drag-handle").forEach(handle=>{ handle.addEventListener("pointerdown", onDragHandleDown); });
+}
+function onDragHandleDown(e){
+  e.preventDefault();
+  const handle = e.currentTarget;
+  const itemEl = handle.closest(".drag-item");
+  const container = handle.closest(".drag-list");
+  if(!itemEl || !container) return;
+  const listKey = container.dataset.listKey;
+  const arr = resolveDragArray(listKey);
+  if(!arr) return;
+  const itemId = itemEl.dataset.itemId;
+  const startIndex = arr.findIndex(x=>x.id===itemId);
+  if(startIndex<0) return;
+  const siblings = Array.from(container.querySelectorAll(".drag-item"));
+  const rects = siblings.map(el=>({ id: el.dataset.itemId, rect: el.getBoundingClientRect() }));
+  dragCtx = { listKey, arr, startIndex, currentTargetIndex: startIndex, itemEl, container, rects, startY: e.clientY };
+  itemEl.classList.add("dragging");
+  itemEl.style.zIndex = "50";
+  try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+  document.addEventListener("pointermove", onDragMove);
+  document.addEventListener("pointerup", onDragEnd);
+}
+function onDragMove(e){
+  if(!dragCtx) return;
+  const dy = e.clientY - dragCtx.startY;
+  dragCtx.itemEl.style.transform = `translateY(${dy}px)`;
+  let targetIndex = 0;
+  for(let i=0;i<dragCtx.rects.length;i++){
+    const mid = dragCtx.rects[i].rect.top + dragCtx.rects[i].rect.height/2;
+    if(e.clientY > mid) targetIndex = i; else break;
+  }
+  dragCtx.container.querySelectorAll(".drag-item").forEach(el=>el.classList.remove("drop-indicator"));
+  if(targetIndex !== dragCtx.startIndex){
+    const targetId = dragCtx.rects[targetIndex].id;
+    const targetEl = dragCtx.container.querySelector(`[data-item-id="${targetId}"]`);
+    if(targetEl && targetEl !== dragCtx.itemEl) targetEl.classList.add("drop-indicator");
+  }
+  dragCtx.currentTargetIndex = targetIndex;
+}
+async function onDragEnd(){
+  document.removeEventListener("pointermove", onDragMove);
+  document.removeEventListener("pointerup", onDragEnd);
+  if(!dragCtx) return;
+  const { arr, startIndex, currentTargetIndex, itemEl, container } = dragCtx;
+  itemEl.classList.remove("dragging");
+  itemEl.style.transform = "";
+  itemEl.style.zIndex = "";
+  container.querySelectorAll(".drag-item").forEach(el=>el.classList.remove("drop-indicator"));
+  const changed = currentTargetIndex !== startIndex;
+  dragCtx = null;
+  if(changed){
+    const [moved] = arr.splice(startIndex,1);
+    arr.splice(currentTargetIndex,0,moved);
+    await persistAndRender();
+  }
+}
 
 /* ---------------- 主渲染 ---------------- */
 function render(){
@@ -601,8 +788,6 @@ function render(){
   const isAdminSession = sAcc && sAcc.role === "admin";
   const isImpersonating = isAdminSession && session.actingAs && session.actingAs !== session.accountId;
   const isChild = acc.role === "child";
-  const avail = isChild ? availablePoints(acc.id) : null;
-  const held = isChild ? heldPoints(acc.id) : null;
 
   let html = "";
   html += `<header class="top">
@@ -611,9 +796,7 @@ function render(){
       <button class="logout-btn" data-action="logout">登出</button>
     </div>
     <div class="sync-dot ${isOnline?"":"offline"}"><span class="d"></span>${isOnline? "已連線・即時同步" : "離線中，變更暫存本機"}</div>
-    <div class="account-row">
-      <span class="role-pill ${acc.role}">${acc.name}・${roleLabel(acc.role)}</span>
-    </div>`;
+    <div class="account-row"><span class="role-pill ${acc.role}">${acc.name}・${roleLabel(acc.role)}</span></div>`;
 
   if(isAdminSession && !isImpersonating){
     html += `<div class="account-row">
@@ -629,8 +812,10 @@ function render(){
 
   if(isChild){
     html += `<div class="balance-strip">
-      <div class="bal-box avail"><div class="label">可用點數</div><div class="num">${avail} ⭐</div></div>
-      <div class="bal-box held"><div class="label">保留中（兌換審核）</div><div class="num">${held} 🔒</div></div>
+      <div class="bal-box gen"><div class="label">可用 銅星</div><div class="num">${availablePoints(acc.id,CUR_GENERAL)} ⭐</div></div>
+      <div class="bal-box spec"><div class="label">可用 金星</div><div class="num">${availablePoints(acc.id,CUR_SPECIAL)} 🌟</div></div>
+      <div class="bal-box held"><div class="label">保留中 銅星</div><div class="num">${heldPoints(acc.id,CUR_GENERAL)} 🔒</div></div>
+      <div class="bal-box held"><div class="label">保留中 金星</div><div class="num">${heldPoints(acc.id,CUR_SPECIAL)} 🔒</div></div>
     </div>`;
   }
   html += `</header>`;
@@ -695,45 +880,6 @@ function bindLoginEvents(){
   if(pwInput) pwInput.addEventListener("keydown", async (e)=>{ if(e.key==="Enter"){ const accId = document.getElementById("loginAccount").value; await attemptLogin(accId, pwInput.value); } });
 }
 
-function countPendingSteps(){
-  return getPendingCalendarSteps().length;
-}
-function getPendingCalendarSteps(){
-  const list = [];
-  Object.keys(state.dayLog).forEach(date=>{
-    Object.keys(state.dayLog[date]).forEach(childId=>{
-      Object.keys(state.dayLog[date][childId]).forEach(stepId=>{
-        const log = state.dayLog[date][childId][stepId];
-        if(log.status!=="pending") return;
-        const dt = getDayType(getDayTypeIdForDate(date));
-        const step = dt ? dt.steps.find(s=>s.id===stepId) : null;
-        list.push({
-          date, childId, stepId,
-          stepName: step ? step.name : "（項目已刪除）",
-          points: step ? step.points : 0,
-          dayTypeName: dt ? dt.name : "",
-          ts: log.ts
-        });
-      });
-    });
-  });
-  list.sort((a,b)=> a.date===b.date ? a.ts-b.ts : (a.date < b.date ? -1 : 1));
-  return list;
-}
-async function approveAllPendingStepsForChild(childId){
-  const items = getPendingCalendarSteps().filter(i=>i.childId===childId);
-  let n = 0;
-  items.forEach(i=>{
-    const dt = getDayType(getDayTypeIdForDate(i.date));
-    const step = dt ? dt.steps.find(s=>s.id===i.stepId) : null;
-    setStepLog(i.date, i.childId, i.stepId, {status:"approved", ts: Date.now()});
-    if(step && step.points) addLedgerEntry(i.childId, step.points, `${dt.name}｜${step.name}`, i.date);
-    n++;
-  });
-  showToast(n>0 ? `已核准 ${n} 項日曆任務` : "沒有待審核的日曆任務");
-  await persistAndRender();
-}
-
 /* ---------------- 日曆區塊 ---------------- */
 function renderCalendarSection(acc, isParentView){
   if(!calMonth) calMonth = new Date();
@@ -789,7 +935,7 @@ function renderDateDetail(dateStr, childId, isParentView){
   if(!dt || (dt.steps.length===0)){ html += `<div class="empty">這天還沒有設定任何項目</div></div>`; return html; }
   if(!childId){ html += `<div class="empty">尚未選擇孩子帳號</div></div>`; return html; }
 
-  dt.steps.slice().sort((a,b)=>a.order-b.order).forEach(step=>{
+  dt.steps.slice().forEach(step=>{
     if(step.type==="note"){ html += `<div class="note-card">📌 ${step.name}${step.desc?`｜${step.desc}`:""}</div>`; return; }
     const log = getStepLog(dateStr, childId, step.id);
     let chip = "", actionBtns = "";
@@ -810,7 +956,7 @@ function renderDateDetail(dateStr, childId, isParentView){
       if(isParentView && !isFuture) actionBtns = `<button class="btn teal" data-action="approveStep" data-date="${dateStr}" data-child="${childId}" data-id="${step.id}">補登完成</button>`;
     }
     html += `<div class="task-item"><div class="t-main"><div class="t-name">${step.name}</div>${step.desc?`<div class="t-desc">${step.desc}</div>`:""}</div>
-      <div class="btn-row">${step.points? `<span class="pts pos">+${step.points}</span>` : `<span class="pts neutral">無點數</span>`}${chip}${actionBtns}</div></div>`;
+      <div class="btn-row">${step.points? ptsBadge(step.points, step.currency||CUR_GENERAL, "pos") : `<span class="pts neutral">無點數</span>`}${chip}${actionBtns}</div></div>`;
   });
   if(isParentView){
     const hasPending = dt.steps.some(s=>{ const l=getStepLog(dateStr, childId, s.id); return l && l.status==="pending"; });
@@ -828,7 +974,7 @@ function renderExtraTab(acc){
   list.forEach(r=>{
     const pending = state.pendingTasks.find(t=>t.childId===acc.id && t.ruleId===r.id && t.status==="pending");
     html += `<div class="task-item"><div class="t-main"><div class="t-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div><div class="t-desc">${r.desc||""}</div></div>
-      <div class="btn-row"><span class="pts pos">+${r.points}</span>${pending? `<button class="btn ghost" disabled>審核中</button>` : `<button class="btn primary" data-action="submitExtra" data-id="${r.id}">我做到了</button>`}</div></div>`;
+      <div class="btn-row">${ptsBadge(r.points, r.currency||CUR_GENERAL, "pos")}${pending? `<button class="btn ghost" disabled>審核中</button>` : `<button class="btn primary" data-action="submitExtra" data-id="${r.id}">我做到了</button>`}</div></div>`;
   });
   html += `</div>`;
   return html;
@@ -839,24 +985,34 @@ function providerLabel(providerId){
   return p ? `跟 ${p.name} 兌換` : "";
 }
 function renderShopTab(acc){
-  let html = `<div class="card"><h2>兌換商店 <small class="hint" style="font-weight:400;">目前可用點數：${availablePoints(acc.id)} ⭐</small></h2>`;
+  let html = `<div class="card"><h2>兌換商店</h2>
+    <small class="hint">可用 銅星：${availablePoints(acc.id,CUR_GENERAL)} ⭐　可用 金星：${availablePoints(acc.id,CUR_SPECIAL)} 🌟</small><div class="divider"></div>`;
   if(state.rules.rewards.length===0) html += `<div class="empty">尚未設定獎勵</div>`;
   html += `<div class="shop-grid">`;
   state.rules.rewards.forEach(r=>{
-    const canAfford = availablePoints(acc.id) >= r.points;
+    const costs = r.costs || {general:0,special:0};
+    const canAfford = canAffordCosts(acc.id, costs);
     const pTag = providerLabel(r.provider);
     html += `<div class="shop-card">${pTag? `<span class="provider-tag">${pTag}</span>`:""}
       <div class="s-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div>
-      <div class="s-desc">${r.desc||""}</div><div class="s-price">${r.points} ⭐</div>
+      <div class="s-desc">${r.desc||""}</div><div class="s-price">${formatCosts(costs)}</div>
       <button class="btn gold" ${canAfford?"":"disabled"} data-action="requestRedeem" data-id="${r.id}">${canAfford?"申請兌換":"點數不足"}</button></div>`;
   });
   html += `</div></div>`;
+
+  html += `<div class="card"><h2>金星兌換銅星</h2>
+    <small class="hint">目前匯率：1 🌟金星 ＝ ${state.exchangeRate} ⭐銅星（只能金星換銅星，無法反向兌換）</small><div class="divider"></div>
+    <div class="form-grid">
+      <div><label class="f-label">要兌換的金星數量</label><input type="number" id="exchange_amount" placeholder="1"></div>
+      <div style="align-self:flex-end;"><button class="btn purple" style="width:100%;" data-action="exchangeCurrency">確認兌換</button></div>
+    </div></div>`;
+
   const mine = state.pendingRedemptions.filter(r=>r.childId===acc.id && r.status==="held");
   html += `<div class="card"><h2>兌換審核中</h2>`;
   if(mine.length===0) html += `<div class="empty">目前沒有等待審核的兌換</div>`;
   mine.forEach(r=>{
     const pTag = providerLabel(r.provider);
-    html += `<div class="task-item"><div class="t-main"><div class="t-name">${r.rewardName} ${pTag?`<span class="provider-tag">${pTag}</span>`:""}</div><div class="t-desc">送出時間 ${fmtTime(r.ts)}，等待完成兌換</div></div><span class="pts neg">-${r.points}</span></div>`;
+    html += `<div class="task-item"><div class="t-main"><div class="t-name">${r.rewardName} ${pTag?`<span class="provider-tag">${pTag}</span>`:""}</div><div class="t-desc">送出時間 ${fmtTime(r.ts)}，等待完成兌換</div></div><span class="pts neg">${formatCosts(r.costs)}</span></div>`;
   });
   html += `</div>`;
   return html;
@@ -866,7 +1022,8 @@ function renderLedgerTab(acc){
   let html = `<div class="card"><h2>收支紀錄</h2>`;
   if(entries.length===0) html += `<div class="empty">還沒有任何紀錄</div>`;
   entries.forEach(e=>{
-    html += `<div class="ledger-row"><div><div class="l-desc">${e.desc}</div><div class="l-meta">${fmtTime(e.ts)}｜${e.meta||""}${e.actorName?`｜來源：${e.actorName}`:""}</div></div><div class="l-amt ${e.points>=0?"pos":"neg"}">${e.points>=0?"+":""}${e.points}</div></div>`;
+    const m = curMeta(e.currency||CUR_GENERAL);
+    html += `<div class="ledger-row"><div><div class="l-desc">${e.desc}</div><div class="l-meta">${fmtTime(e.ts)}｜${e.meta||""}${e.actorName?`｜來源：${e.actorName}`:""}</div></div><div class="l-amt ${e.points>=0?"pos":"neg"} ${e.currency===CUR_SPECIAL?"spec":""}">${e.points>=0?"+":""}${e.points} ${m.symbol}</div></div>`;
   });
   html += `</div>`;
   return html;
@@ -883,7 +1040,7 @@ function renderReviewTab(){
     html += `<div class="section-tag">${c?c.name:"未知帳號"} <button class="btn teal" style="padding:4px 10px;font-size:11px;" data-action="approveAllTasks" data-id="${cid}">全部核准</button></div>`;
     byChild[cid].forEach(t=>{
       html += `<div class="task-item"><div class="t-main"><div class="t-name">${t.ruleName}</div><div class="t-desc">送出時間 ${fmtTime(t.ts)}</div></div>
-        <div class="btn-row"><span class="pts pos">+${t.points}</span><button class="btn teal" data-action="approveTask" data-id="${t.id}">核准</button><button class="btn coral" data-action="rejectTask" data-id="${t.id}">拒絕</button></div></div>`;
+        <div class="btn-row">${ptsBadge(t.points, t.currency||CUR_GENERAL, "pos")}<button class="btn teal" data-action="approveTask" data-id="${t.id}">核准</button><button class="btn coral" data-action="rejectTask" data-id="${t.id}">拒絕</button></div></div>`;
     });
   });
   html += `</div>`;
@@ -894,7 +1051,7 @@ function renderReviewTab(){
     const c = getAccount(r.childId);
     const pTag = providerLabel(r.provider);
     html += `<div class="task-item"><div class="t-main"><div class="t-name">${c?c.name:""} · ${r.rewardName} ${pTag?`<span class="provider-tag">${pTag}</span>`:""}</div><div class="t-desc">申請時間 ${fmtTime(r.ts)}，點數已在保留區</div></div>
-      <div class="btn-row"><span class="pts neg">-${r.points}</span><button class="btn teal" data-action="completeRedeem" data-id="${r.id}">已完成兌換</button><button class="btn coral" data-action="cancelRedeem" data-id="${r.id}">取消</button></div></div>`;
+      <div class="btn-row"><span class="pts neg">${formatCosts(r.costs)}</span><button class="btn teal" data-action="completeRedeem" data-id="${r.id}">已完成兌換</button><button class="btn coral" data-action="cancelRedeem" data-id="${r.id}">取消</button></div></div>`;
   });
   html += `</div>`;
   const pendingSteps = getPendingCalendarSteps();
@@ -907,7 +1064,7 @@ function renderReviewTab(){
     html += `<div class="section-tag">${c?c.name:"未知帳號"} <button class="btn teal" style="padding:4px 10px;font-size:11px;" data-action="approveAllStepsForChild" data-id="${cid}">全部核准</button></div>`;
     byChildSteps[cid].forEach(i=>{
       html += `<div class="task-item"><div class="t-main"><div class="t-name">${i.stepName}</div><div class="t-desc">${fmtDateFull(i.date)}・${i.dayTypeName}・送出時間 ${fmtTime(i.ts)}</div></div>
-        <div class="btn-row">${i.points?`<span class="pts pos">+${i.points}</span>`:`<span class="pts neutral">無點數</span>`}
+        <div class="btn-row">${i.points?ptsBadge(i.points, i.currency, "pos"):`<span class="pts neutral">無點數</span>`}
         <button class="btn teal" data-action="approveStep" data-date="${i.date}" data-child="${i.childId}" data-id="${i.stepId}">核准</button>
         <button class="btn coral" data-action="rejectStep" data-date="${i.date}" data-child="${i.childId}" data-id="${i.stepId}">拒絕</button></div></div>`;
     });
@@ -921,31 +1078,50 @@ function renderPointsTab(){
   if(kids.length===0){ html += `<div class="empty">尚未新增孩子帳號</div></div>`; return html; }
   html += `<div class="child-tab-select">${kids.map(k=>`<button data-action="setChildFilter" data-id="${k.id}" class="${childViewFilter===k.id?"active":""}">${k.name}</button>`).join("")}</div>`;
   const target = childViewFilter || kids[0].id;
-  html += `<div class="form-grid">
-      <div><label class="f-label">原因（選填）</label><input type="text" id="grant_desc" placeholder="例如：今天表現很棒"></div>
+  html += `<div class="form-grid three">
+      <div><label class="f-label">原因（選填）</label><input type="text" id="grant_desc" placeholder="今天表現很棒"></div>
       <div><label class="f-label">點數</label><input type="number" id="grant_points" placeholder="5"></div>
+      <div><label class="f-label">貨幣</label><select class="field" id="grant_currency">${state.currencies.map(c=>`<option value="${c.id}">${c.symbol} ${c.name}</option>`).join("")}</select></div>
     </div>
     <button class="btn teal" data-action="grantPoints" data-child="${target}">確認加點</button></div>`;
 
   html += `<div class="card"><h2>手動扣點</h2>`;
   state.rules.deduction.forEach(r=>{
     html += `<div class="task-item"><div class="t-main"><div class="t-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div><div class="t-desc">${r.desc||""}</div></div>
-      <div class="btn-row"><span class="pts neg">-${r.points}</span><button class="btn coral" data-action="applyDeduction" data-child="${target}" data-id="${r.id}">扣點</button></div></div>`;
+      <div class="btn-row">${ptsBadge(r.points, r.currency||CUR_GENERAL, "neg")}<button class="btn coral" data-action="applyDeduction" data-child="${target}" data-id="${r.id}">扣點</button></div></div>`;
   });
   html += `</div>`;
   return html;
+}
+function currencySelectHtml(id, selected){
+  return `<select class="field edit-currency" data-kind="${id.kind}" ${id.daytype?`data-daytype="${id.daytype}"`:`data-type="${id.type}"`} data-id="${id.id}">
+    ${state.currencies.map(c=>`<option value="${c.id}" ${selected===c.id?"selected":""}>${c.symbol}</option>`).join("")}
+  </select>`;
 }
 function renderDayTypesTab(){
   let html = "";
   state.dayTypes.forEach(dt=>{
     html += `<div class="card"><h2><span class="dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${dt.color};margin-right:6px;"></span>${dt.name}</h2>`;
-    dt.steps.slice().sort((a,b)=>a.order-b.order).forEach(s=>{
-      html += `<div class="rule-row"><div class="t-main"><div class="t-name">${s.name} ${s.type==="note"?'<span class="batch-tag b2">提醒（不需審核）</span>':''}</div>${s.desc?`<div class="t-desc">${s.desc}</div>`:""}</div>
-        <div class="btn-row">${s.points?`<span class="pts pos">+${s.points}</span>`:`<span class="pts neutral">無點數</span>`}<button class="btn ghost" data-action="removeDayTypeStep" data-daytype="${dt.id}" data-id="${s.id}">刪除</button></div></div>`;
+    if(dt.steps.length>0) html += `<div class="drag-list" data-list-key="daytype:${dt.id}">`;
+    dt.steps.slice().forEach(s=>{
+      html += `<div class="rule-row drag-item" data-item-id="${s.id}">
+        <span class="drag-handle">⠿</span>
+        <div class="t-main">
+          <input type="text" class="edit-name" data-kind="step" data-daytype="${dt.id}" data-id="${s.id}" value="${s.name.replace(/"/g,'&quot;')}">
+          ${s.type==="note"?'<span class="batch-tag b2" style="margin-top:4px;display:inline-block;">提醒（不需審核）</span>':''}
+        </div>
+        <div class="btn-row">
+          <input type="number" class="edit-points" data-kind="step" data-daytype="${dt.id}" data-id="${s.id}" value="${s.points}">
+          ${currencySelectHtml({kind:"step", daytype:dt.id, id:s.id}, s.currency||CUR_GENERAL)}
+          <button class="btn ghost" data-action="removeDayTypeStep" data-daytype="${dt.id}" data-id="${s.id}">刪除</button>
+        </div></div>`;
     });
-    html += `<div class="divider"></div><div class="form-grid">
+    if(dt.steps.length>0) html += `</div>`;
+    html += `<div class="divider"></div><div class="form-grid three">
         <div><label class="f-label">步驟名稱</label><input type="text" id="new_step_${dt.id}_name" placeholder="例如：穿外套"></div>
-        <div><label class="f-label">點數（提醒類填0）</label><input type="number" id="new_step_${dt.id}_points" placeholder="1"></div></div>
+        <div><label class="f-label">點數（提醒填0）</label><input type="number" id="new_step_${dt.id}_points" placeholder="1"></div>
+        <div><label class="f-label">貨幣</label><select class="field" id="new_step_${dt.id}_currency">${state.currencies.map(c=>`<option value="${c.id}">${c.symbol} ${c.name}</option>`).join("")}</select></div>
+      </div>
       <div class="form-grid"><div><label class="f-label">類型</label><select class="field" id="new_step_${dt.id}_type"><option value="task">需回報／審核</option><option value="note">僅提醒（不需審核）</option></select></div>
         <div style="align-self:flex-end;"><button class="btn primary" style="width:100%;" data-action="addDayTypeStep" data-daytype="${dt.id}">新增步驟</button></div></div></div>`;
   });
@@ -959,32 +1135,62 @@ function renderRulesTab(){
   let html = "";
   [["extra","額外活動"],["deduction","扣點規則"]].forEach(([type,label])=>{
     html += `<div class="card"><h2>${label}</h2>`;
+    if(state.rules[type].length>0) html += `<div class="drag-list" data-list-key="rules:${type}">`;
     state.rules[type].forEach(r=>{
-      html += `<div class="rule-row"><div class="t-main"><div class="t-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div><div class="t-desc">${r.desc||""}</div></div>
-        <div class="btn-row"><span class="pts ${type==='deduction'?'neg':'pos'}">${type==='deduction'?'-':'+'}${r.points}</span><button class="btn ghost" data-action="removeRule" data-type="${type}" data-id="${r.id}">刪除</button></div></div>`;
+      html += `<div class="rule-row drag-item" data-item-id="${r.id}">
+        <span class="drag-handle">⠿</span>
+        <div class="t-main">
+          <input type="text" class="edit-name" data-kind="rule" data-type="${type}" data-id="${r.id}" value="${r.name.replace(/"/g,'&quot;')}">
+          <div class="t-desc">${r.desc||""}</div>
+        </div>
+        <div class="btn-row">
+          <input type="number" class="edit-points" data-kind="rule" data-type="${type}" data-id="${r.id}" value="${r.points}">
+          ${currencySelectHtml({kind:"rule", type:type, id:r.id}, r.currency||CUR_GENERAL)}
+          <button class="btn ghost" data-action="removeRule" data-type="${type}" data-id="${r.id}">刪除</button>
+        </div></div>`;
     });
-    html += `<div class="divider"></div><div class="form-grid">
+    if(state.rules[type].length>0) html += `</div>`;
+    html += `<div class="divider"></div><div class="form-grid three">
         <div><label class="f-label">項目名稱</label><input type="text" id="new_${type}_name" placeholder="例如：主動閱讀"></div>
-        <div><label class="f-label">點數</label><input type="number" id="new_${type}_points" placeholder="2"></div></div>
+        <div><label class="f-label">點數</label><input type="number" id="new_${type}_points" placeholder="2"></div>
+        <div><label class="f-label">貨幣</label><select class="field" id="new_${type}_currency">${state.currencies.map(c=>`<option value="${c.id}">${c.symbol} ${c.name}</option>`).join("")}</select></div>
+      </div>
       <div class="form-grid full"><div><label class="f-label">說明（選填）</label><input type="text" id="new_${type}_desc" placeholder="補充說明"></div></div>
       <button class="btn primary" data-action="addRule" data-type="${type}">新增此規則</button></div>`;
   });
 
-  html += `<div class="card"><h2>兌換獎勵</h2>`;
+  html += `<div class="card"><h2>兌換獎勵<small class="hint" style="font-weight:400;margin-left:6px;">可同時設定銅星與金星價格</small></h2>`;
+  if(state.rules.rewards.length>0) html += `<div class="drag-list" data-list-key="rules:rewards">`;
   state.rules.rewards.forEach(r=>{
     const pTag = providerLabel(r.provider);
-    html += `<div class="rule-row"><div class="t-main"><div class="t-name">${r.name} ${pTag?`<span class="provider-tag">${pTag}</span>`:'<span class="batch-tag b2">共同</span>'}</div><div class="t-desc">${r.desc||""}</div></div>
-      <div class="btn-row"><span class="pts pos">${r.points}</span><button class="btn ghost" data-action="removeRule" data-type="rewards" data-id="${r.id}">刪除</button></div></div>`;
+    const costs = r.costs || {general:0,special:0};
+    html += `<div class="rule-row drag-item" data-item-id="${r.id}">
+      <span class="drag-handle">⠿</span>
+      <div class="t-main">
+        <input type="text" class="edit-name" data-kind="rule" data-type="rewards" data-id="${r.id}" value="${r.name.replace(/"/g,'&quot;')}">
+        ${pTag?`<span class="provider-tag">${pTag}</span>`:'<span class="batch-tag b2" style="margin-top:4px;display:inline-block;">共同</span>'}
+      </div>
+      <div class="btn-row" style="flex-direction:column;align-items:flex-end;gap:4px;">
+        <div style="display:flex;gap:4px;align-items:center;">
+          <span style="font-size:11px;color:var(--ink-soft);">⭐</span>
+          <input type="number" class="edit-reward-cost" data-id="${r.id}" data-currency="general" value="${costs.general||0}" style="width:52px;">
+          <span style="font-size:11px;color:var(--ink-soft);">🌟</span>
+          <input type="number" class="edit-reward-cost" data-id="${r.id}" data-currency="special" value="${costs.special||0}" style="width:52px;">
+        </div>
+        <button class="btn ghost" data-action="removeRule" data-type="rewards" data-id="${r.id}">刪除</button>
+      </div></div>`;
   });
+  if(state.rules.rewards.length>0) html += `</div>`;
   html += `<div class="divider"></div><div class="form-grid">
       <div><label class="f-label">獎勵名稱</label><input type="text" id="new_rewards_name" placeholder="例如：晚睡15分鐘"></div>
-      <div><label class="f-label">點數</label><input type="number" id="new_rewards_points" placeholder="10"></div></div>
-    <div class="form-grid">
       <div><label class="f-label">提供者</label><select class="field" id="new_rewards_provider">
         <option value="common">共同（全家）</option>
         ${parents().map(p=>`<option value="${p.id}">${p.name}</option>`).join("")}
-      </select></div>
-      <div><label class="f-label">說明（選填）</label><input type="text" id="new_rewards_desc" placeholder="補充說明"></div></div>
+      </select></div></div>
+    <div class="form-grid">
+      <div><label class="f-label">所需 ⭐銅星</label><input type="number" id="new_rewards_general" placeholder="10"></div>
+      <div><label class="f-label">所需 🌟金星</label><input type="number" id="new_rewards_special" placeholder="0"></div></div>
+    <div class="form-grid full"><div><label class="f-label">說明（選填）</label><input type="text" id="new_rewards_desc" placeholder="補充說明"></div></div>
     <button class="btn primary" data-action="addRewardRule">新增此獎勵</button></div>`;
   return html;
 }
@@ -1028,16 +1234,18 @@ function renderOverviewTab(){
   if(kids.length===0) return `<div class="card"><div class="empty">尚未新增孩子帳號</div></div>`;
   let html = "";
   kids.forEach(k=>{
-    const avail = availablePoints(k.id), held = heldPoints(k.id);
     const entries = getLedger(k.id).slice().sort((a,b)=>b.ts-a.ts).slice(0,6);
     html += `<div class="card"><h2>${k.name} 的帳戶</h2>
       <div class="balance-strip" style="margin-bottom:12px;">
-        <div class="bal-box avail" style="background:var(--teal-soft);"><div class="label" style="color:var(--teal)">可用點數</div><div class="num" style="color:var(--teal)">${avail} ⭐</div></div>
-        <div class="bal-box held" style="background:var(--gold-soft);"><div class="label" style="color:#7A5312">保留中</div><div class="num" style="color:#7A5312">${held} 🔒</div></div>
+        <div class="bal-box gen" style="background:var(--teal-soft);"><div class="label" style="color:var(--teal)">可用 銅星</div><div class="num" style="color:var(--teal)">${availablePoints(k.id,CUR_GENERAL)} ⭐</div></div>
+        <div class="bal-box spec" style="background:#FDF3D6;"><div class="label" style="color:#8A6D12">可用 金星</div><div class="num" style="color:#8A6D12">${availablePoints(k.id,CUR_SPECIAL)} 🌟</div></div>
+        <div class="bal-box held" style="background:var(--gold-soft);"><div class="label" style="color:#7A5312">保留 銅星</div><div class="num" style="color:#7A5312">${heldPoints(k.id,CUR_GENERAL)} 🔒</div></div>
+        <div class="bal-box held" style="background:var(--gold-soft);"><div class="label" style="color:#7A5312">保留 金星</div><div class="num" style="color:#7A5312">${heldPoints(k.id,CUR_SPECIAL)} 🔒</div></div>
       </div><div class="section-tag">最近紀錄</div>`;
     if(entries.length===0) html += `<div class="empty">還沒有任何紀錄</div>`;
     entries.forEach(e=>{
-      html += `<div class="ledger-row"><div><div class="l-desc">${e.desc}</div><div class="l-meta">${fmtTime(e.ts)}${e.actorName?`｜來源：${e.actorName}`:""}</div></div><div class="l-amt ${e.points>=0?"pos":"neg"}">${e.points>=0?"+":""}${e.points}</div></div>`;
+      const m = curMeta(e.currency||CUR_GENERAL);
+      html += `<div class="ledger-row"><div><div class="l-desc">${e.desc}</div><div class="l-meta">${fmtTime(e.ts)}</div></div><div class="l-amt ${e.points>=0?"pos":"neg"}">${e.points>=0?"+":""}${e.points} ${m.symbol}</div></div>`;
     });
     html += `</div>`;
   });
@@ -1052,6 +1260,34 @@ function bindEvents(){
   document.querySelectorAll("nav.tabs button").forEach(btn=>{ btn.addEventListener("click", ()=>{ activeTab = btn.dataset.tab; render(); }); });
   const dtSelect = document.querySelector('[data-action="changeDateType"]');
   if(dtSelect) dtSelect.addEventListener("change", async (e)=>{ await setDateAssignment(e.target.dataset.date, e.target.value); });
+
+  initDragReorder();
+  document.querySelectorAll(".edit-name").forEach(input=>{
+    input.addEventListener("change", async (e)=>{
+      const v = e.target.value;
+      if(e.target.dataset.kind==="rule") await updateRuleField(e.target.dataset.type, e.target.dataset.id, "name", v);
+      else await updateStepField(e.target.dataset.daytype, e.target.dataset.id, "name", v);
+    });
+  });
+  document.querySelectorAll(".edit-points").forEach(input=>{
+    input.addEventListener("change", async (e)=>{
+      const v = e.target.value;
+      if(e.target.dataset.kind==="rule") await updateRuleField(e.target.dataset.type, e.target.dataset.id, "points", v);
+      else await updateStepField(e.target.dataset.daytype, e.target.dataset.id, "points", v);
+    });
+  });
+  document.querySelectorAll(".edit-currency").forEach(sel=>{
+    sel.addEventListener("change", async (e)=>{
+      const v = e.target.value;
+      if(e.target.dataset.kind==="rule") await updateRuleField(e.target.dataset.type, e.target.dataset.id, "currency", v);
+      else await updateStepField(e.target.dataset.daytype, e.target.dataset.id, "currency", v);
+    });
+  });
+  document.querySelectorAll(".edit-reward-cost").forEach(input=>{
+    input.addEventListener("change", async (e)=>{
+      await updateRewardCost(e.target.dataset.id, e.target.dataset.currency, e.target.value);
+    });
+  });
 
   document.querySelectorAll("[data-action]").forEach(el=>{
     const action = el.dataset.action;
@@ -1079,7 +1315,12 @@ function bindEvents(){
         else if(action==="grantPoints"){
           const desc = document.getElementById("grant_desc").value;
           const points = document.getElementById("grant_points").value;
-          await grantPoints(el.dataset.child, points, desc);
+          const currency = document.getElementById("grant_currency").value;
+          await grantPoints(el.dataset.child, points, desc, currency);
+        }
+        else if(action==="exchangeCurrency"){
+          const amt = document.getElementById("exchange_amount").value;
+          await exchangeCurrency(currentAccountId, amt);
         }
         else if(action==="requestRedeem") await requestRedeem(el.dataset.id);
         else if(action==="completeRedeem") await completeRedeem(el.dataset.id);
@@ -1099,7 +1340,8 @@ function bindEvents(){
           const name = document.getElementById(`new_step_${dtId}_name`).value;
           const points = document.getElementById(`new_step_${dtId}_points`).value;
           const type = document.getElementById(`new_step_${dtId}_type`).value;
-          await addDayTypeStep(dtId, name, points, type);
+          const currency = document.getElementById(`new_step_${dtId}_currency`).value;
+          await addDayTypeStep(dtId, name, points, type, currency);
         }
         else if(action==="addAccount"){
           const name = document.getElementById("new_acc_name").value;
@@ -1112,14 +1354,16 @@ function bindEvents(){
           const name = document.getElementById(`new_${type}_name`).value;
           const points = document.getElementById(`new_${type}_points`).value;
           const desc = document.getElementById(`new_${type}_desc`).value;
-          await addRule(type, name, desc, points, "自訂");
+          const currency = document.getElementById(`new_${type}_currency`).value;
+          await addRule(type, name, desc, points, "自訂", currency);
         }
         else if(action==="addRewardRule"){
           const name = document.getElementById("new_rewards_name").value;
-          const points = document.getElementById("new_rewards_points").value;
           const desc = document.getElementById("new_rewards_desc").value;
+          const general = document.getElementById("new_rewards_general").value;
+          const special = document.getElementById("new_rewards_special").value;
           const provider = document.getElementById("new_rewards_provider").value;
-          await addRule("rewards", name, desc, points, "自訂", provider);
+          await addRewardRule(name, desc, general, special, provider);
         }
       }catch(err){ showToast("操作失敗，請再試一次"); console.error(err); }
     });
