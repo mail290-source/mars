@@ -7,148 +7,220 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<meta name="theme-color" content="#16283F">
+<meta name="theme-color" content="#6FC6F0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="星星銀行">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #EEF3F6; --card: #FFFFFF; --ink: #1E2A38; --ink-soft: #5B6B7C; --line: #DCE4EA;
-    --navy: #223A5E; --navy-deep: #16283F; --gold: #E8A93B; --gold-soft: #FBEBCB;
-    --teal: #0E8074; --teal-soft: #DCF3EF; --coral: #D65B4A; --coral-soft: #FBE4E0; --purple:#6B4FA0; --purple-soft:#EAE3F5; --radius: 16px;
+    --bg: #F4F2FF;
+    --card: #FFFFFF;
+    --ink: #392E58;
+    --ink-soft: #8A82AA;
+    --line: #E9E4FA;
+    --sky: #4EBBEA;
+    --sky-deep: #2C93C2;
+    --grape: #B27EE8;
+    --grape-deep: #7E4CB8;
+    --sun: #FFC53D;
+    --sun-deep: #B87A0A;
+    --sun-soft: #FFF3D6;
+    --mint: #4FD3A6;
+    --mint-deep: #1B9C72;
+    --mint-soft: #DFF8EE;
+    --coral: #FF7F70;
+    --coral-deep: #D24A3C;
+    --coral-soft: #FFE4E0;
+    --grape-soft: #F1E5FC;
+    --sky-soft: #E3F5FD;
+    --radius: 22px;
+    --radius-pill: 999px;
   }
   *{box-sizing:border-box;}
-  body{ margin:0; font-family: -apple-system, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif; background: var(--bg); color: var(--ink); -webkit-font-smoothing:antialiased; }
+  body{
+    margin:0;
+    font-family: "Nunito", -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background:
+      radial-gradient(circle at 8% 4%, #FFF6DE 0, transparent 40%),
+      radial-gradient(circle at 92% 10%, #E4F6FF 0, transparent 45%),
+      var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
   .app{ max-width: 880px; margin: 0 auto; min-height:100vh; display:flex; flex-direction:column;}
-  header.top{ background: linear-gradient(135deg, var(--navy-deep), var(--navy)); color:#fff; padding: 18px 20px 16px; border-radius: 0 0 22px 22px; box-shadow: 0 4px 18px rgba(20,35,55,.18); }
-  .brand{ display:flex; align-items:center; gap:10px; justify-content:space-between; }
-  .brand-left{ display:flex; align-items:center; gap:10px; }
-  .brand .mark{ width:34px;height:34px;border-radius:10px; background: var(--gold); display:flex;align-items:center;justify-content:center; font-size:18px; flex-shrink:0; }
-  .brand h1{ font-size:17px; margin:0; letter-spacing:.02em; font-weight:700;}
-  .brand .sub{ font-size:11.5px; color:#B9C8DA; margin-top:1px;}
-  .logout-btn{ background: rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.25); border-radius:9px; padding:7px 12px; font-size:12px; font-weight:700; cursor:pointer; }
-  .sync-dot{ display:inline-flex; align-items:center; gap:5px; font-size:10.5px; color:#9FB4CC; margin-top:8px; }
-  .sync-dot .d{ width:6px;height:6px;border-radius:50%; background:#5FD1A6; }
-  .sync-dot.offline .d{ background:#D65B4A; }
-  .account-row{ margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
-  select.acct-select{ flex:1; min-width:150px; background: rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.25); border-radius:10px; padding:9px 10px; font-size:14px; font-weight:600; }
+  h1,h2,.th-font{ font-family:"Baloo 2", "Nunito", sans-serif; }
+
+  header.top{
+    background: linear-gradient(135deg, #63C3EE 0%, #8FADEE 55%, #B589EA 100%);
+    color:#fff;
+    padding: 20px 20px 22px;
+    border-radius: 0 0 34px 34px;
+    box-shadow: 0 10px 26px rgba(120,110,220,.22);
+    position:relative;
+    overflow:hidden;
+  }
+  header.top::before{
+    content:""; position:absolute; top:-40px; right:-30px; width:150px; height:150px;
+    background:rgba(255,255,255,.16); border-radius:50%;
+  }
+  header.top::after{
+    content:""; position:absolute; bottom:-60px; left:-40px; width:170px; height:170px;
+    background:rgba(255,255,255,.10); border-radius:50%;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; justify-content:space-between; position:relative; z-index:1; }
+  .brand-left{ display:flex; align-items:center; gap:11px; }
+  .brand .mark{
+    width:44px;height:44px;border-radius:16px;
+    background: linear-gradient(145deg, #FFDA6B, #FFB23D);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px; flex-shrink:0;
+    box-shadow: 0 4px 0 rgba(184,122,10,.35);
+    animation: wiggle 3.2s ease-in-out infinite;
+  }
+  @keyframes wiggle{ 0%,100%{transform:rotate(-6deg);} 50%{transform:rotate(6deg);} }
+  .brand h1{ font-size:20px; margin:0; letter-spacing:.01em; font-weight:800;}
+  .brand .sub{ font-size:11.5px; color:#EAF3FF; margin-top:1px; font-weight:600;}
+  .logout-btn{ background: rgba(255,255,255,.22); color:#fff; border:none; border-radius: var(--radius-pill); padding:8px 16px; font-size:12.5px; font-weight:800; cursor:pointer; }
+  .logout-btn:active{ transform:scale(.94); }
+  .sync-dot{ display:inline-flex; align-items:center; gap:6px; font-size:11px; color:#EFF6FF; margin-top:10px; font-weight:700; position:relative; z-index:1; }
+  .sync-dot .d{ width:7px;height:7px;border-radius:50%; background:#7CF0BE; box-shadow:0 0 0 3px rgba(124,240,190,.3); }
+  .sync-dot.offline .d{ background:#FF8F7F; box-shadow:0 0 0 3px rgba(255,143,127,.3); }
+  .account-row{ margin-top:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; position:relative; z-index:1; }
+  select.acct-select{ flex:1; min-width:150px; background: rgba(255,255,255,.22); color:#fff; border:none; border-radius: var(--radius-pill); padding:10px 16px; font-size:14px; font-weight:800; }
   select.acct-select option{ color:#111; }
-  .role-pill{ font-size:11px; padding:4px 10px; border-radius:20px; font-weight:700; white-space:nowrap; }
-  .role-pill.parent{ background: var(--gold-soft); color:#7A5312; }
-  .role-pill.child{ background: var(--teal-soft); color:#0A5850; }
-  .role-pill.admin{ background: var(--purple-soft); color:#4A3574; }
-  .impersonate-banner{ margin-top:10px; background: rgba(232,169,59,.16); border:1px solid rgba(232,169,59,.4); border-radius:10px; padding:8px 10px; display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:12px; color:#FBEBCB; }
-  .impersonate-banner button{ background: var(--gold); color:#5A3B0A; border:none; border-radius:8px; padding:5px 10px; font-size:11.5px; font-weight:700; cursor:pointer; white-space:nowrap; }
-  .balance-strip{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:14px; }
-  .bal-box{ background: rgba(255,255,255,.08); border-radius:12px; padding:9px 11px; }
-  .bal-box .label{ font-size:10.5px; color:#B9C8DA; }
-  .bal-box .num{ font-size:17px; font-weight:800; margin-top:2px; }
-  .bal-box.gen .num{ color: var(--gold); }
-  .bal-box.spec .num{ color:#F4C64F; }
-  .bal-box.held .num{ color:#8FD9CC; font-size:14px; }
-  nav.tabs{ display:flex; gap:6px; padding:12px 16px 0; overflow-x:auto; }
-  nav.tabs button{ border:none; background:transparent; padding:9px 14px; font-size:13.5px; font-weight:700; color: var(--ink-soft); border-radius:10px 10px 0 0; cursor:pointer; white-space:nowrap; }
-  nav.tabs button.active{ background: var(--card); color: var(--navy); }
+  .role-pill{ font-size:12px; padding:5px 14px; border-radius: var(--radius-pill); font-weight:800; white-space:nowrap; }
+  .role-pill.parent{ background: #FFFFFF; color: var(--sun-deep); }
+  .role-pill.child{ background: #FFFFFF; color: var(--mint-deep); }
+  .role-pill.admin{ background: #FFFFFF; color: var(--grape-deep); }
+  .impersonate-banner{ margin-top:10px; background: rgba(255,255,255,.24); border:none; border-radius: 16px; padding:9px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:12.5px; color:#fff; font-weight:700; position:relative; z-index:1; }
+  .impersonate-banner button{ background: #fff; color: var(--grape-deep); border:none; border-radius: var(--radius-pill); padding:6px 12px; font-size:11.5px; font-weight:800; cursor:pointer; white-space:nowrap; }
+  .balance-strip{ display:grid; grid-template-columns:repeat(2,1fr); gap:9px; margin-top:16px; position:relative; z-index:1; }
+  .bal-box{ background: rgba(255,255,255,.2); border-radius:18px; padding:11px 13px; }
+  .bal-box .label{ font-size:11px; color:#F1F6FF; font-weight:700; }
+  .bal-box .num{ font-size:19px; font-weight:800; margin-top:3px; font-family:"Baloo 2",sans-serif; }
+  .bal-box.gen .num{ color: #FFE9A8; }
+  .bal-box.spec .num{ color:#F3E3FF; }
+  .bal-box.held .num{ color:#D6FFF0; font-size:15px; }
+
+  nav.tabs{ display:flex; gap:8px; padding:14px 16px 0; overflow-x:auto; }
+  nav.tabs button{ border:none; background: var(--card); padding:10px 16px; font-size:13.5px; font-weight:800; color: var(--ink-soft); border-radius: var(--radius-pill); cursor:pointer; white-space:nowrap; box-shadow: 0 2px 0 rgba(57,46,88,.06); }
+  nav.tabs button.active{ background: linear-gradient(135deg, var(--sky), var(--grape)); color: #fff; box-shadow: 0 3px 0 rgba(126,76,184,.25); }
+  nav.tabs button:active{ transform: scale(.96); }
+
   main{ flex:1; padding:16px; }
-  .card{ background: var(--card); border-radius: var(--radius); padding:16px; border:1px solid var(--line); margin-bottom:14px; }
-  .card h2{ font-size:14px; margin:0 0 12px; color:var(--navy); letter-spacing:.02em; }
-  .card h2 .count{ background:var(--coral-soft); color:var(--coral); font-size:11px; padding:2px 8px; border-radius:12px; margin-left:6px; }
-  .empty{ color: var(--ink-soft); font-size:13px; padding: 18px 4px; text-align:center; }
-  .task-item, .rule-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:11px 12px; border:1px solid var(--line); border-radius:12px; margin-bottom:8px; background:#FCFDFE; }
+  .card{ background: var(--card); border-radius: var(--radius); padding:18px; border:none; margin-bottom:14px; box-shadow: 0 3px 14px rgba(90,80,150,.08); }
+  .card h2{ font-size:15px; margin:0 0 12px; color:var(--ink); letter-spacing:0; font-weight:800; display:flex; align-items:center; gap:6px; }
+  .card h2 .count{ background:var(--coral-soft); color:var(--coral-deep); font-size:11px; padding:2px 9px; border-radius: var(--radius-pill); margin-left:4px; font-weight:800; }
+  .empty{ color: var(--ink-soft); font-size:13.5px; padding: 22px 4px; text-align:center; font-weight:700; }
+  .task-item, .rule-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:13px 14px; border:none; border-radius:18px; margin-bottom:9px; background: #FAF9FF; transition: transform .12s; }
+  .task-item:active, .rule-row:active{ transform: scale(.99); }
   .task-item .t-main{ flex:1; min-width:0; }
-  .task-item .t-name{ font-size:14px; font-weight:700; color:var(--ink); }
-  .task-item .t-desc{ font-size:12px; color: var(--ink-soft); margin-top:2px; }
-  .pts{ font-size:12.5px; font-weight:800; padding:3px 9px; border-radius:20px; white-space:nowrap; }
-  .pts.pos.gen{ background: var(--teal-soft); color: var(--teal); }
-  .pts.pos.spec{ background:#FDF3D6; color:#8A6D12; }
-  .pts.neg{ background: var(--coral-soft); color: var(--coral); }
-  .pts.neutral{ background:#EDEFF2; color:var(--ink-soft); }
-  .btn{ border:none; border-radius:9px; padding:8px 13px; font-size:12.5px; font-weight:700; cursor:pointer; }
-  .btn.primary{ background: var(--navy); color:#fff; }
-  .btn.teal{ background: var(--teal); color:#fff; }
-  .btn.coral{ background: var(--coral); color:#fff; }
-  .btn.ghost{ background:#fff; color: var(--navy); border:1px solid var(--line); }
-  .btn.gold{ background: var(--gold); color:#5A3B0A; }
-  .btn.purple{ background: var(--purple); color:#fff; }
-  .btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .task-item .t-name{ font-size:14.5px; font-weight:800; color:var(--ink); }
+  .task-item .t-desc{ font-size:12px; color: var(--ink-soft); margin-top:2px; font-weight:600; }
+  .pts{ font-size:12.5px; font-weight:800; padding:5px 11px; border-radius: var(--radius-pill); white-space:nowrap; }
+  .pts.pos.gen{ background: var(--sun-soft); color: var(--sun-deep); }
+  .pts.pos.spec{ background:var(--grape-soft); color:var(--grape-deep); }
+  .pts.neg{ background: var(--coral-soft); color: var(--coral-deep); }
+  .pts.neutral{ background:#EEEBFB; color:var(--ink-soft); }
+  .btn{ border:none; border-radius: var(--radius-pill); padding:10px 16px; font-size:12.5px; font-weight:800; cursor:pointer; transition: transform .1s; }
+  .btn:active{ transform: scale(.94); }
+  .btn.primary{ background: linear-gradient(135deg, var(--sky), var(--sky-deep)); color:#fff; box-shadow:0 3px 0 rgba(44,147,194,.35); }
+  .btn.teal{ background: linear-gradient(135deg, var(--mint), var(--mint-deep)); color:#fff; box-shadow:0 3px 0 rgba(27,156,114,.3); }
+  .btn.coral{ background: linear-gradient(135deg, var(--coral), var(--coral-deep)); color:#fff; box-shadow:0 3px 0 rgba(210,74,60,.3); }
+  .btn.ghost{ background:#F4F1FF; color: var(--ink); border:none; }
+  .btn.gold{ background: linear-gradient(135deg, var(--sun), var(--sun-deep)); color:#5A3B0A; box-shadow:0 3px 0 rgba(184,122,10,.3); }
+  .btn.purple{ background: linear-gradient(135deg, var(--grape), var(--grape-deep)); color:#fff; box-shadow:0 3px 0 rgba(126,76,184,.3); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; box-shadow:none; }
   .btn-row{ display:flex; gap:6px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
-  .section-tag{ font-size:11px; font-weight:800; color: var(--navy); text-transform:uppercase; letter-spacing:.06em; margin: 14px 0 8px; display:flex; align-items:center; gap:8px;}
+  .section-tag{ font-size:11.5px; font-weight:800; color: var(--grape-deep); text-transform:uppercase; letter-spacing:.04em; margin: 16px 0 9px; display:flex; align-items:center; gap:8px;}
   .section-tag:first-child{ margin-top:0;}
-  .pending-badge{ font-size:11px; color:var(--gold); font-weight:700; }
-  .shop-grid{ display:grid; grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); gap:10px; }
-  .shop-card{ border:1px solid var(--line); border-radius:12px; padding:12px; background:#FCFDFE; display:flex; flex-direction:column; gap:6px; position:relative; }
-  .shop-card .s-name{ font-size:13.5px; font-weight:700; }
-  .shop-card .s-desc{ font-size:11.5px; color:var(--ink-soft); line-height:1.4; min-height:30px; }
-  .shop-card .s-price{ font-size:13.5px; font-weight:800; color: var(--gold); display:flex; gap:6px; flex-wrap:wrap; }
-  .provider-tag{ display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:8px; background:var(--purple-soft); color:#4A3574; width:fit-content; }
-  .ledger-row{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed var(--line); font-size:13px; gap:8px; }
+  .pending-badge{ font-size:11px; color:#fff; font-weight:800; background:var(--coral); padding:1px 7px; border-radius: var(--radius-pill); }
+  .shop-grid{ display:grid; grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); gap:11px; }
+  .shop-card{ border:none; border-radius:20px; padding:14px; background: linear-gradient(160deg, #FAF9FF, #F3F0FF); display:flex; flex-direction:column; gap:7px; position:relative; box-shadow: 0 2px 10px rgba(90,80,150,.07); }
+  .shop-card .s-name{ font-size:14px; font-weight:800; }
+  .shop-card .s-desc{ font-size:11.5px; color:var(--ink-soft); line-height:1.4; min-height:30px; font-weight:600; }
+  .shop-card .s-price{ font-size:13.5px; font-weight:800; color: var(--sun-deep); display:flex; gap:6px; flex-wrap:wrap; }
+  .provider-tag{ display:inline-block; font-size:10.5px; font-weight:800; padding:3px 10px; border-radius: var(--radius-pill); background:var(--grape-soft); color:#6B3FA0; width:fit-content; }
+  .ledger-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1.5px dashed var(--line); font-size:13px; gap:8px; }
   .ledger-row:last-child{ border-bottom:none; }
-  .ledger-row .l-desc{ color:var(--ink); font-weight:600; }
-  .ledger-row .l-meta{ color:var(--ink-soft); font-size:11px; margin-top:1px; }
-  .ledger-row .l-amt.pos{ color:var(--teal); font-weight:800; }
-  .ledger-row .l-amt.neg{ color:var(--coral); font-weight:800; }
-  .ledger-row .l-amt.spec{ color:#8A6D12; }
-  input[type=text], input[type=number], input[type=password], select.field, textarea{ width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:9px; font-size:13.5px; font-family:inherit; background:#fff; color:var(--ink); }
+  .ledger-row .l-desc{ color:var(--ink); font-weight:700; }
+  .ledger-row .l-meta{ color:var(--ink-soft); font-size:11px; margin-top:1px; font-weight:600; }
+  .ledger-row .l-amt.pos{ color:var(--mint-deep); font-weight:800; }
+  .ledger-row .l-amt.neg{ color:var(--coral-deep); font-weight:800; }
+  .ledger-row .l-amt.spec{ color:var(--grape-deep); }
+  input[type=text], input[type=number], input[type=password], select.field, textarea{ width:100%; padding:10px 12px; border:2px solid var(--line); border-radius:14px; font-size:13.5px; font-family:inherit; background:#fff; color:var(--ink); font-weight:600; }
+  input:focus, select.field:focus{ outline:none; border-color: var(--sky); }
   .form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px; }
   .form-grid.three{ grid-template-columns: 1fr 1fr 1fr; }
   .form-grid.full{ grid-template-columns:1fr; }
-  label.f-label{ font-size:11.5px; color: var(--ink-soft); font-weight:700; display:block; margin-bottom:3px; }
-  .divider{ height:1px; background:var(--line); margin:14px 0; }
+  label.f-label{ font-size:11.5px; color: var(--ink-soft); font-weight:800; display:block; margin-bottom:4px; }
+  .divider{ height:1.5px; background:var(--line); margin:16px 0; border:none; }
   .child-tab-select{ display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
-  .child-tab-select button{ border:1px solid var(--line); background:#fff; padding:6px 12px; border-radius:20px; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--ink-soft); }
-  .child-tab-select button.active{ background: var(--navy); color:#fff; border-color:var(--navy); }
-  .toast{ position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background: var(--navy-deep); color:#fff; padding:10px 18px; border-radius:30px; font-size:13px; font-weight:600; box-shadow:0 6px 20px rgba(0,0,0,.25); z-index:50; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; }
+  .child-tab-select button{ border:none; background:#F4F1FF; padding:7px 14px; border-radius: var(--radius-pill); font-size:12.5px; font-weight:800; cursor:pointer; color:var(--ink-soft); }
+  .child-tab-select button.active{ background: linear-gradient(135deg, var(--sky), var(--grape)); color:#fff; }
+  .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background: var(--ink); color:#fff; padding:11px 20px; border-radius: var(--radius-pill); font-size:13px; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,.2); z-index:50; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
-  .loading-wrap{ display:flex; align-items:center; justify-content:center; padding:60px 0; color:var(--ink-soft); font-size:13px; }
-  .batch-tag{ font-size:10px; padding:2px 7px; border-radius:8px; font-weight:700; margin-left:6px;}
-  .batch-tag.b1{ background:#DDEBF7; color:#1D4E7A; }
-  .batch-tag.b2{ background:#FCE4D6; color:#8A4416; }
-  small.hint{ color: var(--ink-soft); font-size:11.5px; }
-  .cal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-  .cal-head .cal-title{ font-size:15px; font-weight:800; color:var(--navy); }
+  .loading-wrap{ display:flex; align-items:center; justify-content:center; padding:70px 0; color:var(--ink-soft); font-size:13.5px; font-weight:700; }
+  .batch-tag{ font-size:10px; padding:3px 9px; border-radius: var(--radius-pill); font-weight:800; margin-left:6px;}
+  .batch-tag.b1{ background:var(--sky-soft); color:var(--sky-deep); }
+  .batch-tag.b2{ background:var(--coral-soft); color:var(--coral-deep); }
+  small.hint{ color: var(--ink-soft); font-size:11.5px; font-weight:600; }
+  .cal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .cal-head .cal-title{ font-size:16px; font-weight:800; color:var(--ink); font-family:"Baloo 2",sans-serif; }
   .cal-nav{ display:flex; gap:6px; }
-  .cal-nav button{ border:1px solid var(--line); background:#fff; border-radius:8px; width:30px; height:30px; font-size:14px; cursor:pointer; color:var(--navy); }
-  .cal-nav button.today-btn{ width:auto; padding:0 10px; font-size:12px; font-weight:700; }
-  .weekday-row{ display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:11px; color:var(--ink-soft); font-weight:700; margin-bottom:4px; }
-  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
-  .cal-cell{ aspect-ratio:1/1; border-radius:10px; border:1px solid transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; font-size:13px; background:#F7F9FB; color:var(--ink); }
+  .cal-nav button{ border:none; background:#F4F1FF; border-radius:12px; width:32px; height:32px; font-size:15px; cursor:pointer; color: var(--grape-deep); font-weight:800; }
+  .cal-nav button.today-btn{ width:auto; padding:0 12px; font-size:12px; font-weight:800; }
+  .weekday-row{ display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:11px; color:var(--ink-soft); font-weight:800; margin-bottom:5px; }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+  .cal-cell{ aspect-ratio:1/1; border-radius:14px; border:none; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; font-size:13px; background:#F6F4FF; color:var(--ink); font-weight:700; }
   .cal-cell.blank{ background:transparent; cursor:default; }
-  .cal-cell .dnum{ font-weight:700; }
-  .cal-cell .dot{ width:6px; height:6px; border-radius:50%; margin-top:3px; }
-  .cal-cell.today{ border:2px solid var(--gold); }
-  .cal-cell.today::after{ content:"★"; position:absolute; top:2px; right:4px; font-size:9px; color:var(--gold); }
-  .cal-cell.selected{ background: var(--navy); color:#fff; }
+  .cal-cell .dnum{ font-weight:800; }
+  .cal-cell .dot{ width:7px; height:7px; border-radius:50%; margin-top:3px; }
+  .cal-cell.today{ background: var(--sun-soft); box-shadow: inset 0 0 0 2.5px var(--sun); }
+  .cal-cell.today::after{ content:"⭐"; position:absolute; top:-4px; right:-4px; font-size:12px; }
+  .cal-cell.selected{ background: linear-gradient(135deg, var(--sky), var(--grape)); color:#fff; }
   .cal-cell.selected .dnum{ color:#fff; }
-  .cal-cell.incomplete-mark::before{ content:"!"; position:absolute; top:2px; left:5px; font-size:9px; font-weight:900; color:var(--coral); }
-  .daytype-legend{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; font-size:11px; color:var(--ink-soft); }
+  .cal-cell.incomplete-mark::before{ content:"!"; position:absolute; top:1px; left:5px; font-size:10px; font-weight:900; color:#fff; background:var(--coral); width:14px; height:14px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .daytype-legend{ display:flex; gap:11px; flex-wrap:wrap; margin-top:12px; font-size:11px; color:var(--ink-soft); font-weight:700; }
   .daytype-legend span{ display:inline-flex; align-items:center; gap:4px; }
-  .daytype-legend .dot{ width:7px; height:7px; border-radius:50%; display:inline-block; }
-  .date-detail-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
-  .date-detail-head .ddate{ font-size:15px; font-weight:800; color:var(--navy); }
-  .status-chip{ font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; }
-  .status-chip.done{ background:var(--teal-soft); color:var(--teal); }
-  .status-chip.pending{ background:var(--gold-soft); color:#7A5312; }
-  .status-chip.missing{ background:var(--coral-soft); color:var(--coral); }
-  .status-chip.future{ background:#EDEFF2; color:var(--ink-soft); }
-  .note-card{ background:#F7F5EE; border:1px dashed #DDD3B8; border-radius:12px; padding:10px 12px; font-size:13px; color:#6B5B2E; margin-bottom:8px; }
-  .login-wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
-  .login-card{ width:100%; max-width:360px; background:var(--card); border-radius:22px; padding:28px 24px; border:1px solid var(--line); box-shadow:0 10px 30px rgba(20,35,55,.1); }
-  .login-card .mark{ width:52px;height:52px;border-radius:16px; background:var(--gold); display:flex;align-items:center;justify-content:center; font-size:26px; margin:0 auto 14px; }
-  .login-card h1{ text-align:center; font-size:18px; color:var(--navy); margin:0 0 4px; }
-  .login-card .sub{ text-align:center; font-size:12px; color:var(--ink-soft); margin-bottom:20px; }
+  .daytype-legend .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; }
+  .date-detail-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+  .date-detail-head .ddate{ font-size:15.5px; font-weight:800; color:var(--ink); font-family:"Baloo 2",sans-serif; }
+  .status-chip{ font-size:11px; font-weight:800; padding:4px 11px; border-radius: var(--radius-pill); }
+  .status-chip.done{ background:var(--mint-soft); color:var(--mint-deep); }
+  .status-chip.pending{ background:var(--sun-soft); color:var(--sun-deep); }
+  .status-chip.missing{ background:var(--coral-soft); color:var(--coral-deep); }
+  .status-chip.future{ background:#EEEBFB; color:var(--ink-soft); }
+  .note-card{ background:var(--sky-soft); border:none; border-radius:16px; padding:12px 14px; font-size:13px; color:var(--sky-deep); margin-bottom:9px; font-weight:700; }
+  .login-wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+    background: radial-gradient(circle at 15% 10%, #FFF3CE 0, transparent 45%), radial-gradient(circle at 85% 90%, #E3F5FF 0, transparent 45%), var(--bg); }
+  .login-card{ width:100%; max-width:360px; background:var(--card); border-radius:32px; padding:32px 26px; border:none; box-shadow:0 16px 40px rgba(120,110,220,.18); }
+  .login-card .mark{ width:64px;height:64px;border-radius:20px; background: linear-gradient(145deg, #FFDA6B, #FFB23D); display:flex;align-items:center;justify-content:center; font-size:32px; margin:0 auto 16px; animation: wiggle 3.2s ease-in-out infinite; box-shadow:0 6px 0 rgba(184,122,10,.3); }
+  .login-card h1{ text-align:center; font-size:21px; color:var(--ink); margin:0 0 4px; font-family:"Baloo 2",sans-serif; font-weight:800; }
+  .login-card .sub{ text-align:center; font-size:12.5px; color:var(--ink-soft); margin-bottom:22px; font-weight:700; }
   .trash-item{ opacity:.9; }
-  .days-left{ font-size:11px; color:var(--coral); font-weight:700; }
+  .days-left{ font-size:11px; color:var(--coral-deep); font-weight:800; }
   .drag-list .drag-item{ display:flex; align-items:flex-start; }
-  .drag-handle{ cursor:grab; touch-action:none; padding:6px 8px 0 0; color:var(--ink-soft); font-size:17px; flex-shrink:0; user-select:none; line-height:1; }
-  .drag-item.dragging{ opacity:.55; box-shadow:0 8px 18px rgba(20,35,55,.18); background:#fff; }
-  .drag-item.drop-indicator{ border-top:3px solid var(--navy); }
-  .edit-name{ font-size:14px; font-weight:700; color:var(--ink); border:1px solid transparent; background:transparent; padding:4px 6px; border-radius:7px; width:100%; }
+  .drag-handle{ cursor:grab; touch-action:none; padding:7px 8px 0 0; color:var(--ink-soft); font-size:18px; flex-shrink:0; user-select:none; line-height:1; }
+  .drag-item.dragging{ opacity:.6; box-shadow:0 10px 22px rgba(90,80,150,.22); background:#fff; border-radius:18px; }
+  .drag-item.drop-indicator{ border-top:3px solid var(--grape); border-radius:0; }
+  .edit-name{ font-size:14.5px; font-weight:800; color:var(--ink); border:2px solid transparent; background:transparent; padding:4px 7px; border-radius:10px; width:100%; }
   .edit-name:focus{ border-color:var(--line); background:#fff; outline:none; }
-  .edit-points{ font-size:13px; font-weight:800; text-align:center; border:1px solid var(--line); border-radius:8px; padding:6px 4px; width:60px; }
-  .edit-currency{ font-size:11.5px; border:1px solid var(--line); border-radius:8px; padding:6px 4px; }
-  .cur-badge{ font-size:10px; padding:2px 7px; border-radius:8px; font-weight:700; margin-top:4px; display:inline-block; }
-  .cur-badge.general{ background:var(--teal-soft); color:var(--teal); }
-  .cur-badge.special{ background:#FDF3D6; color:#8A6D12; }
+  .edit-points{ font-size:13px; font-weight:800; text-align:center; border:2px solid var(--line); border-radius:12px; padding:7px 4px; width:60px; }
+  .edit-currency{ font-size:12px; border:2px solid var(--line); border-radius:12px; padding:7px 4px; font-weight:700; }
+  .cur-badge{ font-size:10px; padding:3px 9px; border-radius: var(--radius-pill); font-weight:800; margin-top:4px; display:inline-block; }
+  .cur-badge.general{ background:var(--sun-soft); color:var(--sun-deep); }
+  .cur-badge.special{ background:var(--grape-soft); color:var(--grape-deep); }
+  .icon-picker{ margin-top:8px; }
+  .icon-picker summary{ font-size:11.5px; font-weight:800; color:var(--sky-deep); cursor:pointer; list-style:none; padding:4px 0; }
+  .icon-picker summary::-webkit-details-marker{ display:none; }
+  .icon-grid{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; max-height:150px; overflow-y:auto; padding:8px; background:#F8F7FF; border-radius:14px; }
+  .icon-opt{ width:36px; height:36px; border:none; border-radius:10px; background:#fff; font-size:19px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .icon-opt:active{ transform:scale(.9); background: var(--sky-soft); }
+  .photo-upload-btn{ display:inline-block; font-size:11.5px; font-weight:800; color:var(--grape-deep); background:var(--grape-soft); padding:7px 12px; border-radius: var(--radius-pill); cursor:pointer; }
 </style>
 </head>
 <body>
@@ -206,6 +278,62 @@ const WEEKDAY_LABELS = ["日","一","二","三","四","五","六"];
 const DT_SCHOOL = "dt_school", DT_HOLIDAY = "dt_holiday", DT_BIRTHDAY = "dt_birthday", DT_SPECIAL = "dt_special";
 const TRASH_DAYS = 30;
 const CUR_GENERAL = "general", CUR_SPECIAL = "special";
+const ICON_LIBRARY = [
+  "☀️","🛏️","🪥","🧦","👟","🛁","🧴","🧸","📖","🍚","🍎","🥕","🥛","🚽","👕",
+  "🎒","✏️","🧩","🎨","🖍️","⚽","🚲","🤸","💃","🎵","🤝","💬","👂","🤲","😊",
+  "🙏","🚗","🌳","🏞️","🐶","🐱","🦋","☂️","🌈","⭐","🌟","🎈","🎂","🎉","🍭",
+  "🍦","🍪","🍿","📺","🎬","🎮","🧁","🎁","📚","🤗","😘","😢","✋","💥","📢",
+  "🕐","🧹","🧼","🪒","🧺","🧊","🎪","🏖️","🚴","🛝"
+];
+function itemVisual(item, size){
+  size = size || 36;
+  if(item.photo) return `<img src="${item.photo}" style="width:${size}px;height:${size}px;border-radius:12px;object-fit:cover;flex-shrink:0;">`;
+  const fs = Math.round(size*0.55);
+  return `<div style="width:${size}px;height:${size}px;border-radius:12px;background:var(--sky-soft);display:flex;align-items:center;justify-content:center;font-size:${fs}px;flex-shrink:0;">${item.icon||"⭐"}</div>`;
+}
+function iconPickerHtml(kind, containerId, id){
+  const attrs = kind==="rule" ? `data-kind="rule" data-type="${containerId}" data-id="${id}"` : `data-kind="step" data-daytype="${containerId}" data-id="${id}"`;
+  return `<details class="icon-picker">
+    <summary>🖼️ 選圖示或照片</summary>
+    <div class="icon-grid">${ICON_LIBRARY.map(ic=>`<button type="button" class="icon-opt" data-action="pickIcon" ${attrs} data-icon="${ic}">${ic}</button>`).join("")}</div>
+    <label class="photo-upload-btn">📷 拍照／選照片<input type="file" accept="image/*" capture="environment" class="photo-input" ${attrs} hidden></label>
+  </details>`;
+}
+async function setItemIcon(kind, containerId, id, icon){
+  const item = kind==="rule" ? state.rules[containerId].find(x=>x.id===id) : (getDayType(containerId)||{steps:[]}).steps.find(x=>x.id===id);
+  if(!item) return;
+  item.icon = icon; item.photo = "";
+  await persistAndRender();
+}
+async function setItemPhoto(kind, containerId, id, dataUrl){
+  const item = kind==="rule" ? state.rules[containerId].find(x=>x.id===id) : (getDayType(containerId)||{steps:[]}).steps.find(x=>x.id===id);
+  if(!item) return;
+  item.photo = dataUrl;
+  await persistAndRender();
+}
+function compressImageFile(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const maxDim = 160;
+        let w = img.width, h = img.height;
+        if(w > h){ if(w > maxDim){ h = Math.round(h*maxDim/w); w = maxDim; } }
+        else { if(h > maxDim){ w = Math.round(w*maxDim/h); h = maxDim; } }
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", 0.6));
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 
 async function defaultStateAsync(){
   const adminId = uid("acc"), dadId = uid("acc"), momId = uid("acc"), kidId = uid("acc");
@@ -224,16 +352,16 @@ async function defaultStateAsync(){
     exchangeRate: 100, // 1 金星 = 100 銅星（僅限金星換銅星，不可逆）
     dayTypes: [
       { id: DT_SCHOOL, name: "上學日", color:"#2E6BB0", steps: [
-        {id:uid("st"), name:"起床", desc:"", points:1, currency:CUR_GENERAL, type:"task", order:1},
-        {id:uid("st"), name:"刷牙", desc:"", points:1, currency:CUR_GENERAL, type:"task", order:2},
-        {id:uid("st"), name:"穿襪子", desc:"", points:1, currency:CUR_GENERAL, type:"task", order:3},
-        {id:uid("st"), name:"穿鞋子", desc:"", points:1, currency:CUR_GENERAL, type:"task", order:4}
+        {id:uid("st"), name:"起床", desc:"", points:1, currency:CUR_GENERAL, type:"task", order:1, icon:"☀️"},
+        {id:uid("st"), name:"刷牙", desc:"", points:1, currency:CUR_GENERAL, type:"task", order:2, icon:"🪥"},
+        {id:uid("st"), name:"穿襪子", desc:"", points:1, currency:CUR_GENERAL, type:"task", order:3, icon:"🧦"},
+        {id:uid("st"), name:"穿鞋子", desc:"", points:1, currency:CUR_GENERAL, type:"task", order:4, icon:"👟"}
       ]},
       { id: DT_HOLIDAY, name: "放假日", color:"#0E8074", steps: [
-        {id:uid("st"), name:"電視時間 1H", desc:"當天可使用的自由時間，不需審核", points:0, currency:CUR_GENERAL, type:"note", order:1}
+        {id:uid("st"), name:"電視時間 1H", desc:"當天可使用的自由時間，不需審核", points:0, currency:CUR_GENERAL, type:"note", order:1, icon:"📺"}
       ]},
       { id: DT_BIRTHDAY, name: "生日", color:"#D6A93B", steps: [
-        {id:uid("st"), name:"今天是生日，不用做例行任務", desc:"好好慶祝這一天", points:0, currency:CUR_GENERAL, type:"note", order:1}
+        {id:uid("st"), name:"今天是生日，不用做例行任務", desc:"好好慶祝這一天", points:0, currency:CUR_GENERAL, type:"note", order:1, icon:"🎂"}
       ]},
       { id: DT_SPECIAL, name: "特殊日子", color:"#8A5FBF", steps: [] }
     ],
@@ -241,29 +369,29 @@ async function defaultStateAsync(){
     dayLog: {},
     rules: {
       extra: [
-        {id:uid("r"), name:"專心做一件事5分鐘", desc:"拼圖、畫畫、積木不中斷", points:2, currency:CUR_GENERAL, batch:"第二批"},
-        {id:uid("r"), name:"主動幫忙", desc:"拿東西、擦桌子", points:1, currency:CUR_GENERAL, batch:"第二批"},
-        {id:uid("r"), name:"動一動", desc:"跳舞、追跑、丟球10分鐘", points:2, currency:CUR_GENERAL, batch:"第二批"},
-        {id:uid("r"), name:"說出感受", desc:"用說的代替哭鬧", points:2, currency:CUR_GENERAL, batch:"第二批"},
-        {id:uid("r"), name:"聽一次指令就做", desc:"不用講第二次", points:2, currency:CUR_GENERAL, batch:"第二批"},
-        {id:uid("r"), name:"分享／輪流", desc:"玩具、點心願意分", points:2, currency:CUR_GENERAL, batch:"第二批"}
+        {id:uid("r"), name:"專心做一件事5分鐘", desc:"拼圖、畫畫、積木不中斷", points:2, currency:CUR_GENERAL, batch:"第二批", icon:"🧩"},
+        {id:uid("r"), name:"主動幫忙", desc:"拿東西、擦桌子", points:1, currency:CUR_GENERAL, batch:"第二批", icon:"🤝"},
+        {id:uid("r"), name:"動一動", desc:"跳舞、追跑、丟球10分鐘", points:2, currency:CUR_GENERAL, batch:"第二批", icon:"🤸"},
+        {id:uid("r"), name:"說出感受", desc:"用說的代替哭鬧", points:2, currency:CUR_GENERAL, batch:"第二批", icon:"💬"},
+        {id:uid("r"), name:"聽一次指令就做", desc:"不用講第二次", points:2, currency:CUR_GENERAL, batch:"第二批", icon:"👂"},
+        {id:uid("r"), name:"分享／輪流", desc:"玩具、點心願意分", points:2, currency:CUR_GENERAL, batch:"第二批", icon:"🤲"}
       ],
       deduction: [
-        {id:uid("r"), name:"哭鬧不聽", desc:"平靜等她冷靜後才處理", points:1, currency:CUR_GENERAL, batch:"第二批"},
-        {id:uid("r"), name:"動手打人/推人", desc:"立即制止＋說明原因", points:2, currency:CUR_GENERAL, batch:"第二批"},
-        {id:uid("r"), name:"故意破壞物品", desc:"生氣摔東西", points:1, currency:CUR_GENERAL, batch:"第二批"},
-        {id:uid("r"), name:"說了3次仍不動作", desc:"先確認她有聽到、聽懂", points:1, currency:CUR_GENERAL, batch:"第二批"}
+        {id:uid("r"), name:"哭鬧不聽", desc:"平靜等她冷靜後才處理", points:1, currency:CUR_GENERAL, batch:"第二批", icon:"😢"},
+        {id:uid("r"), name:"動手打人/推人", desc:"立即制止＋說明原因", points:2, currency:CUR_GENERAL, batch:"第二批", icon:"✋"},
+        {id:uid("r"), name:"故意破壞物品", desc:"生氣摔東西", points:1, currency:CUR_GENERAL, batch:"第二批", icon:"💥"},
+        {id:uid("r"), name:"說了3次仍不動作", desc:"先確認她有聽到、聽懂", points:1, currency:CUR_GENERAL, batch:"第二批", icon:"📢"}
       ],
       rewards: [
-        {id:uid("r"), name:"選一集卡通", desc:"當天晚上看", costs:{general:3,special:0}, batch:"第二批", provider:"common"},
-        {id:uid("r"), name:"貼紙變小圖案", desc:"畫在手背上", costs:{general:3,special:0}, batch:"第二批", provider:"common"},
-        {id:uid("r"), name:"睡前多一本故事", desc:"爸媽多唸一本", costs:{general:5,special:0}, batch:"第二批", provider:"common"},
-        {id:uid("r"), name:"公園玩久一點", desc:"多留15分鐘", costs:{general:8,special:0}, batch:"第二批", provider:"common"},
-        {id:uid("r"), name:"小玩具/貼紙本", desc:"NT$100內自選", costs:{general:10,special:0}, batch:"第二批", provider:"common"},
-        {id:uid("r"), name:"全家出去玩半天", desc:"動物園、遊樂園等", costs:{general:15,special:0}, batch:"第二批", provider:"common"},
-        {id:uid("r"), name:"一小時電視", desc:"全家共同獎勵", costs:{general:10,special:0}, batch:"自訂", provider:"common"},
-        {id:uid("r"), name:"減免三十分鐘抱抱睡", desc:"跟爸爸兌換", costs:{general:8,special:0}, batch:"自訂", provider:dadId},
-        {id:uid("r"), name:"親親抱抱三十秒，不生氣一次", desc:"跟媽媽兌換", costs:{general:8,special:0}, batch:"自訂", provider:momId}
+        {id:uid("r"), name:"選一集卡通", desc:"當天晚上看", costs:{general:3,special:0}, batch:"第二批", provider:"common", icon:"📺"},
+        {id:uid("r"), name:"貼紙變小圖案", desc:"畫在手背上", costs:{general:3,special:0}, batch:"第二批", provider:"common", icon:"⭐"},
+        {id:uid("r"), name:"睡前多一本故事", desc:"爸媽多唸一本", costs:{general:5,special:0}, batch:"第二批", provider:"common", icon:"📖"},
+        {id:uid("r"), name:"公園玩久一點", desc:"多留15分鐘", costs:{general:8,special:0}, batch:"第二批", provider:"common", icon:"🌳"},
+        {id:uid("r"), name:"小玩具/貼紙本", desc:"NT$100內自選", costs:{general:10,special:0}, batch:"第二批", provider:"common", icon:"🧸"},
+        {id:uid("r"), name:"全家出去玩半天", desc:"動物園、遊樂園等", costs:{general:15,special:0}, batch:"第二批", provider:"common", icon:"🏞️"},
+        {id:uid("r"), name:"一小時電視", desc:"全家共同獎勵", costs:{general:10,special:0}, batch:"自訂", provider:"common", icon:"📺"},
+        {id:uid("r"), name:"減免三十分鐘抱抱睡", desc:"跟爸爸兌換", costs:{general:8,special:0}, batch:"自訂", provider:dadId, icon:"🤗"},
+        {id:uid("r"), name:"親親抱抱三十秒，不生氣一次", desc:"跟媽媽兌換", costs:{general:8,special:0}, batch:"自訂", provider:momId, icon:"😘"}
       ]
     },
     ledger: { [kidId]: [] },
@@ -289,8 +417,9 @@ async function loadState(){
   if(!state.trash) state.trash = [];
   const migratedAcc = await migrateAccountsIfNeeded();
   const migratedCur = migrateCurrencyIfNeeded();
+  const migratedIcons = migrateIconsIfNeeded();
   const purged = purgeExpiredTrash();
-  if(migratedAcc || migratedCur || purged) await saveState();
+  if(migratedAcc || migratedCur || migratedIcons || purged) await saveState();
 }
 async function saveState(){
   try{
@@ -355,6 +484,26 @@ function migrateCurrencyIfNeeded(){
   state.pendingTasks.forEach(t=>{ if(!t.currency){ t.currency = CUR_GENERAL; changed = true; } });
   state.pendingRedemptions.forEach(r=>{
     if(!r.costs){ r.costs = { general: r.points||0, special: 0 }; delete r.points; changed = true; }
+  });
+  return changed;
+}
+function migrateIconsIfNeeded(){
+  let changed = false;
+  const nameIconMap = {
+    "起床":"☀️", "刷牙":"🪥", "穿襪子":"🧦", "穿鞋子":"👟", "電視時間 1H":"📺",
+    "今天是生日，不用做例行任務":"🎂",
+    "專心做一件事5分鐘":"🧩", "主動幫忙":"🤝", "動一動":"🤸", "說出感受":"💬",
+    "聽一次指令就做":"👂", "分享／輪流":"🤲",
+    "哭鬧不聽":"😢", "動手打人/推人":"✋", "故意破壞物品":"💥", "說了3次仍不動作":"📢",
+    "選一集卡通":"📺", "貼紙變小圖案":"⭐", "睡前多一本故事":"📖", "公園玩久一點":"🌳",
+    "小玩具/貼紙本":"🧸", "全家出去玩半天":"🏞️", "一小時電視":"📺",
+    "減免三十分鐘抱抱睡":"🤗", "親親抱抱三十秒，不生氣一次":"😘"
+  };
+  ["extra","deduction","rewards"].forEach(type=>{
+    state.rules[type].forEach(r=>{ if(!r.icon){ r.icon = nameIconMap[r.name] || (type==="rewards"?"🎁":"⭐"); changed = true; } });
+  });
+  state.dayTypes.forEach(dt=>{
+    dt.steps.forEach(s=>{ if(!s.icon){ s.icon = nameIconMap[s.name] || "⭐"; changed = true; } });
   });
   return changed;
 }
@@ -822,8 +971,8 @@ function render(){
 
   const isAdminOwnDashboard = acc.role === "admin";
   const tabs = isChild
-    ? [["home","首頁"],["extra","額外活動"],["shop","兌換商店"],["ledger","我的紀錄"]]
-    : [["home","日曆"],["review","待審核"],["points","點數調整"],["daytypes","日期類型"],["rules","規則管理"],["trash","垃圾桶"],["overview","家庭總覽"]].concat(isAdminOwnDashboard ? [["accounts","帳戶管理"]] : []);
+    ? [["home","🏠 首頁"],["extra","🎯 額外活動"],["shop","🎁 兌換商店"],["ledger","📒 我的紀錄"]]
+    : [["home","📅 日曆"],["review","✅ 待審核"],["points","💰 點數調整"],["daytypes","🗓️ 日期類型"],["rules","🛠️ 規則管理"],["trash","🗑️ 垃圾桶"],["overview","👪 家庭總覽"]].concat(isAdminOwnDashboard ? [["accounts","🔑 帳戶管理"]] : []);
   if(!activeTab) activeTab = "home";
 
   html += `<nav class="tabs">${tabs.map(([k,l])=>{
@@ -952,10 +1101,10 @@ function renderDateDetail(dateStr, childId, isParentView){
       if(isFuture){ chip = `<span class="status-chip future">尚未到</span>`; }
       else if(isPast){ chip = `<span class="status-chip missing">未完成</span>`; }
       else { chip = `<span class="status-chip pending">待完成</span>`; }
-      if(!isParentView && isToday) actionBtns = `<button class="btn primary" data-action="submitStep" data-date="${dateStr}" data-child="${childId}" data-id="${step.id}">我做到了</button>`;
+      if(!isParentView && isToday) actionBtns = `<button class="btn primary" data-action="submitStep" data-date="${dateStr}" data-child="${childId}" data-id="${step.id}">✅ 我做到了</button>`;
       if(isParentView && !isFuture) actionBtns = `<button class="btn teal" data-action="approveStep" data-date="${dateStr}" data-child="${childId}" data-id="${step.id}">補登完成</button>`;
     }
-    html += `<div class="task-item"><div class="t-main"><div class="t-name">${step.name}</div>${step.desc?`<div class="t-desc">${step.desc}</div>`:""}</div>
+    html += `<div class="task-item">${itemVisual(step,40)}<div class="t-main"><div class="t-name">${step.name}</div>${step.desc?`<div class="t-desc">${step.desc}</div>`:""}</div>
       <div class="btn-row">${step.points? ptsBadge(step.points, step.currency||CUR_GENERAL, "pos") : `<span class="pts neutral">無點數</span>`}${chip}${actionBtns}</div></div>`;
   });
   if(isParentView){
@@ -968,13 +1117,13 @@ function renderDateDetail(dateStr, childId, isParentView){
 
 /* ---------------- 其他頁籤 ---------------- */
 function renderExtraTab(acc){
-  let html = `<div class="card"><h2>額外活動（隨時可回報）</h2>`;
+  let html = `<div class="card"><h2>🎯 額外活動（隨時可回報）</h2>`;
   const list = state.rules.extra;
   if(list.length===0) html += `<div class="empty">目前沒有設定項目</div>`;
   list.forEach(r=>{
     const pending = state.pendingTasks.find(t=>t.childId===acc.id && t.ruleId===r.id && t.status==="pending");
-    html += `<div class="task-item"><div class="t-main"><div class="t-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div><div class="t-desc">${r.desc||""}</div></div>
-      <div class="btn-row">${ptsBadge(r.points, r.currency||CUR_GENERAL, "pos")}${pending? `<button class="btn ghost" disabled>審核中</button>` : `<button class="btn primary" data-action="submitExtra" data-id="${r.id}">我做到了</button>`}</div></div>`;
+    html += `<div class="task-item">${itemVisual(r,40)}<div class="t-main"><div class="t-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div><div class="t-desc">${r.desc||""}</div></div>
+      <div class="btn-row">${ptsBadge(r.points, r.currency||CUR_GENERAL, "pos")}${pending? `<button class="btn ghost" disabled>審核中</button>` : `<button class="btn primary" data-action="submitExtra" data-id="${r.id}">✅ 我做到了</button>`}</div></div>`;
   });
   html += `</div>`;
   return html;
@@ -985,7 +1134,7 @@ function providerLabel(providerId){
   return p ? `跟 ${p.name} 兌換` : "";
 }
 function renderShopTab(acc){
-  let html = `<div class="card"><h2>兌換商店</h2>
+  let html = `<div class="card"><h2>🎁 兌換商店</h2>
     <small class="hint">可用 銅星：${availablePoints(acc.id,CUR_GENERAL)} ⭐　可用 金星：${availablePoints(acc.id,CUR_SPECIAL)} 🌟</small><div class="divider"></div>`;
   if(state.rules.rewards.length===0) html += `<div class="empty">尚未設定獎勵</div>`;
   html += `<div class="shop-grid">`;
@@ -994,13 +1143,14 @@ function renderShopTab(acc){
     const canAfford = canAffordCosts(acc.id, costs);
     const pTag = providerLabel(r.provider);
     html += `<div class="shop-card">${pTag? `<span class="provider-tag">${pTag}</span>`:""}
+      <div style="display:flex;justify-content:center;margin:2px 0 4px;">${itemVisual(r,56)}</div>
       <div class="s-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div>
       <div class="s-desc">${r.desc||""}</div><div class="s-price">${formatCosts(costs)}</div>
-      <button class="btn gold" ${canAfford?"":"disabled"} data-action="requestRedeem" data-id="${r.id}">${canAfford?"申請兌換":"點數不足"}</button></div>`;
+      <button class="btn gold" ${canAfford?"":"disabled"} data-action="requestRedeem" data-id="${r.id}">${canAfford?"🎉 申請兌換":"點數不足"}</button></div>`;
   });
   html += `</div></div>`;
 
-  html += `<div class="card"><h2>金星兌換銅星</h2>
+  html += `<div class="card"><h2>🔄 金星兌換銅星</h2>
     <small class="hint">目前匯率：1 🌟金星 ＝ ${state.exchangeRate} ⭐銅星（只能金星換銅星，無法反向兌換）</small><div class="divider"></div>
     <div class="form-grid">
       <div><label class="f-label">要兌換的金星數量</label><input type="number" id="exchange_amount" placeholder="1"></div>
@@ -1019,7 +1169,7 @@ function renderShopTab(acc){
 }
 function renderLedgerTab(acc){
   const entries = getLedger(acc.id).slice().sort((a,b)=>b.ts-a.ts);
-  let html = `<div class="card"><h2>收支紀錄</h2>`;
+  let html = `<div class="card"><h2>📒 收支紀錄</h2>`;
   if(entries.length===0) html += `<div class="empty">還沒有任何紀錄</div>`;
   entries.forEach(e=>{
     const m = curMeta(e.currency||CUR_GENERAL);
@@ -1106,9 +1256,11 @@ function renderDayTypesTab(){
     dt.steps.slice().forEach(s=>{
       html += `<div class="rule-row drag-item" data-item-id="${s.id}">
         <span class="drag-handle">⠿</span>
+        ${itemVisual(s,36)}
         <div class="t-main">
           <input type="text" class="edit-name" data-kind="step" data-daytype="${dt.id}" data-id="${s.id}" value="${s.name.replace(/"/g,'&quot;')}">
           ${s.type==="note"?'<span class="batch-tag b2" style="margin-top:4px;display:inline-block;">提醒（不需審核）</span>':''}
+          ${iconPickerHtml("step", dt.id, s.id)}
         </div>
         <div class="btn-row">
           <input type="number" class="edit-points" data-kind="step" data-daytype="${dt.id}" data-id="${s.id}" value="${s.points}">
@@ -1139,9 +1291,11 @@ function renderRulesTab(){
     state.rules[type].forEach(r=>{
       html += `<div class="rule-row drag-item" data-item-id="${r.id}">
         <span class="drag-handle">⠿</span>
+        ${itemVisual(r,36)}
         <div class="t-main">
           <input type="text" class="edit-name" data-kind="rule" data-type="${type}" data-id="${r.id}" value="${r.name.replace(/"/g,'&quot;')}">
           <div class="t-desc">${r.desc||""}</div>
+          ${iconPickerHtml("rule", type, r.id)}
         </div>
         <div class="btn-row">
           <input type="number" class="edit-points" data-kind="rule" data-type="${type}" data-id="${r.id}" value="${r.points}">
@@ -1166,9 +1320,11 @@ function renderRulesTab(){
     const costs = r.costs || {general:0,special:0};
     html += `<div class="rule-row drag-item" data-item-id="${r.id}">
       <span class="drag-handle">⠿</span>
+      ${itemVisual(r,36)}
       <div class="t-main">
         <input type="text" class="edit-name" data-kind="rule" data-type="rewards" data-id="${r.id}" value="${r.name.replace(/"/g,'&quot;')}">
         ${pTag?`<span class="provider-tag">${pTag}</span>`:'<span class="batch-tag b2" style="margin-top:4px;display:inline-block;">共同</span>'}
+        ${iconPickerHtml("rule", "rewards", r.id)}
       </div>
       <div class="btn-row" style="flex-direction:column;align-items:flex-end;gap:4px;">
         <div style="display:flex;gap:4px;align-items:center;">
@@ -1288,6 +1444,17 @@ function bindEvents(){
       await updateRewardCost(e.target.dataset.id, e.target.dataset.currency, e.target.value);
     });
   });
+  document.querySelectorAll(".photo-input").forEach(inp=>{
+    inp.addEventListener("change", async (e)=>{
+      const file = e.target.files[0]; if(!file) return;
+      try{
+        const dataUrl = await compressImageFile(file);
+        const kind = e.target.dataset.kind;
+        const containerId = kind==="rule" ? e.target.dataset.type : e.target.dataset.daytype;
+        await setItemPhoto(kind, containerId, e.target.dataset.id, dataUrl);
+      }catch(err){ showToast("照片處理失敗，請再試一次"); console.error(err); }
+    });
+  });
 
   document.querySelectorAll("[data-action]").forEach(el=>{
     const action = el.dataset.action;
@@ -1301,6 +1468,12 @@ function bindEvents(){
         if(action==="calNext"){ calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth()+1, 1); render(); return; }
         if(action==="calToday"){ calMonth = new Date(); selectedDate = todayStr(); render(); return; }
         if(action==="setChildFilter"){ childViewFilter = el.dataset.id; render(); return; }
+        if(action==="pickIcon"){
+          const kind = el.dataset.kind;
+          const containerId = kind==="rule" ? el.dataset.type : el.dataset.daytype;
+          await setItemIcon(kind, containerId, el.dataset.id, el.dataset.icon);
+          return;
+        }
 
         if(action==="submitStep") await submitStep(el.dataset.date, el.dataset.child, el.dataset.id);
         else if(action==="approveStep") await approveStep(el.dataset.date, el.dataset.child, el.dataset.id);
