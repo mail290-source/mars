@@ -115,7 +115,14 @@
   .card h2{ font-size:15px; margin:0 0 12px; color:var(--ink); letter-spacing:0; font-weight:800; display:flex; align-items:center; gap:6px; }
   .card h2 .count{ background:var(--coral-soft); color:var(--coral-deep); font-size:11px; padding:2px 9px; border-radius: var(--radius-pill); margin-left:4px; font-weight:800; }
   .empty{ color: var(--ink-soft); font-size:13.5px; padding: 22px 4px; text-align:center; font-weight:700; }
-  .task-item, .rule-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:13px 14px; border:none; border-radius:18px; margin-bottom:9px; background: #FAF9FF; transition: transform .12s; }
+  .task-item, .rule-row{ display:grid; grid-template-columns:auto 1fr; column-gap:12px; row-gap:8px; align-items:start; padding:13px 14px; border:none; border-radius:18px; margin-bottom:9px; background: #FAF9FF; transition: transform .12s; }
+  .rule-row{ grid-template-columns:auto auto 1fr; }
+  .task-item .item-icon{ grid-column:1; grid-row:1; }
+  .rule-row .drag-handle{ grid-column:1; grid-row:1; }
+  .rule-row .item-icon{ grid-column:2; grid-row:1; }
+  .task-item .t-main{ grid-column:2; grid-row:1; min-width:0; }
+  .rule-row .t-main{ grid-column:3; grid-row:1; min-width:0; }
+  .task-item .btn-row, .rule-row .btn-row{ grid-column:1 / -1; grid-row:2; justify-content:flex-start !important; width:100%; }
   .task-item:active, .rule-row:active{ transform: scale(.99); }
   .task-item .t-main{ flex:1; min-width:0; }
   .task-item .t-name{ font-size:14.5px; font-weight:800; color:var(--ink); }
@@ -203,7 +210,7 @@
   .login-card .sub{ text-align:center; font-size:12.5px; color:var(--ink-soft); margin-bottom:22px; font-weight:700; }
   .trash-item{ opacity:.9; }
   .days-left{ font-size:11px; color:var(--coral-deep); font-weight:800; }
-  .drag-list .drag-item{ display:flex; align-items:flex-start; }
+  .drag-list .drag-item{ }
   .drag-handle{ cursor:grab; touch-action:none; padding:7px 8px 0 0; color:var(--ink-soft); font-size:18px; flex-shrink:0; user-select:none; line-height:1; }
   .drag-item.dragging{ opacity:.6; box-shadow:0 10px 22px rgba(90,80,150,.22); background:#fff; border-radius:18px; }
   .drag-item.drop-indicator{ border-top:3px solid var(--grape); border-radius:0; }
@@ -263,6 +270,7 @@ let session = null;
 let currentAccountId = null;
 let activeTab = null;
 let childViewFilter = null;
+let rulesSubTab = "extra";
 let calMonth = null;
 let selectedDate = null;
 let isOnline = true;
@@ -287,9 +295,9 @@ const ICON_LIBRARY = [
 ];
 function itemVisual(item, size){
   size = size || 36;
-  if(item.photo) return `<img src="${item.photo}" style="width:${size}px;height:${size}px;border-radius:12px;object-fit:cover;flex-shrink:0;">`;
+  if(item.photo) return `<img class="item-icon" src="${item.photo}" style="width:${size}px;height:${size}px;border-radius:12px;object-fit:cover;flex-shrink:0;">`;
   const fs = Math.round(size*0.55);
-  return `<div style="width:${size}px;height:${size}px;border-radius:12px;background:var(--sky-soft);display:flex;align-items:center;justify-content:center;font-size:${fs}px;flex-shrink:0;">${item.icon||"⭐"}</div>`;
+  return `<div class="item-icon" style="width:${size}px;height:${size}px;border-radius:12px;background:var(--sky-soft);display:flex;align-items:center;justify-content:center;font-size:${fs}px;flex-shrink:0;">${item.icon||"⭐"}</div>`;
 }
 function iconPickerHtml(kind, containerId, id){
   const attrs = kind==="rule" ? `data-kind="rule" data-type="${containerId}" data-id="${id}"` : `data-kind="step" data-daytype="${containerId}" data-id="${id}"`;
@@ -383,15 +391,15 @@ async function defaultStateAsync(){
         {id:uid("r"), name:"說了3次仍不動作", desc:"先確認她有聽到、聽懂", points:1, currency:CUR_GENERAL, batch:"第二批", icon:"📢"}
       ],
       rewards: [
-        {id:uid("r"), name:"選一集卡通", desc:"當天晚上看", costs:{general:3,special:0}, batch:"第二批", provider:"common", icon:"📺"},
-        {id:uid("r"), name:"貼紙變小圖案", desc:"畫在手背上", costs:{general:3,special:0}, batch:"第二批", provider:"common", icon:"⭐"},
-        {id:uid("r"), name:"睡前多一本故事", desc:"爸媽多唸一本", costs:{general:5,special:0}, batch:"第二批", provider:"common", icon:"📖"},
-        {id:uid("r"), name:"公園玩久一點", desc:"多留15分鐘", costs:{general:8,special:0}, batch:"第二批", provider:"common", icon:"🌳"},
-        {id:uid("r"), name:"小玩具/貼紙本", desc:"NT$100內自選", costs:{general:10,special:0}, batch:"第二批", provider:"common", icon:"🧸"},
-        {id:uid("r"), name:"全家出去玩半天", desc:"動物園、遊樂園等", costs:{general:15,special:0}, batch:"第二批", provider:"common", icon:"🏞️"},
-        {id:uid("r"), name:"一小時電視", desc:"全家共同獎勵", costs:{general:10,special:0}, batch:"自訂", provider:"common", icon:"📺"},
-        {id:uid("r"), name:"減免三十分鐘抱抱睡", desc:"跟爸爸兌換", costs:{general:8,special:0}, batch:"自訂", provider:dadId, icon:"🤗"},
-        {id:uid("r"), name:"親親抱抱三十秒，不生氣一次", desc:"跟媽媽兌換", costs:{general:8,special:0}, batch:"自訂", provider:momId, icon:"😘"}
+        {id:uid("r"), name:"選一集卡通", desc:"當天晚上看", costs:{general:3,special:0}, batch:"第二批", providers:["common"], icon:"📺"},
+        {id:uid("r"), name:"貼紙變小圖案", desc:"畫在手背上", costs:{general:3,special:0}, batch:"第二批", providers:["common"], icon:"⭐"},
+        {id:uid("r"), name:"睡前多一本故事", desc:"爸媽多唸一本", costs:{general:5,special:0}, batch:"第二批", providers:["common"], icon:"📖"},
+        {id:uid("r"), name:"公園玩久一點", desc:"多留15分鐘", costs:{general:8,special:0}, batch:"第二批", providers:["common"], icon:"🌳"},
+        {id:uid("r"), name:"小玩具/貼紙本", desc:"NT$100內自選", costs:{general:10,special:0}, batch:"第二批", providers:["common"], icon:"🧸"},
+        {id:uid("r"), name:"全家出去玩半天", desc:"動物園、遊樂園等", costs:{general:15,special:0}, batch:"第二批", providers:["common"], icon:"🏞️"},
+        {id:uid("r"), name:"一小時電視", desc:"全家共同獎勵", costs:{general:10,special:0}, batch:"自訂", providers:["common"], icon:"📺"},
+        {id:uid("r"), name:"減免三十分鐘抱抱睡", desc:"跟爸爸兌換", costs:{general:8,special:0}, batch:"自訂", providers:[dadId], icon:"🤗"},
+        {id:uid("r"), name:"親親抱抱三十秒，不生氣一次", desc:"跟媽媽兌換", costs:{general:8,special:0}, batch:"自訂", providers:[momId], icon:"😘"}
       ]
     },
     ledger: { [kidId]: [] },
@@ -476,7 +484,7 @@ function migrateCurrencyIfNeeded(){
   if(!Array.isArray(state.rules.rewards)) state.rules.rewards = [];
   state.rules.rewards.forEach(r=>{
     if(!r.costs){ r.costs = { general: r.points||0, special: 0 }; delete r.points; changed = true; }
-    if(!r.provider){ r.provider = "common"; changed = true; }
+    if(!r.providers){ r.providers = r.provider ? (r.provider==="common"?["common"]:[r.provider]) : ["common"]; delete r.provider; changed = true; }
   });
   Object.keys(state.ledger).forEach(cid=>{
     state.ledger[cid].forEach(e=>{ if(!e.currency){ e.currency = CUR_GENERAL; changed = true; } });
@@ -572,6 +580,7 @@ function currentAccount(){ return getAccount(currentAccountId); }
 function sessionAccount(){ return session ? getAccount(session.accountId) : null; }
 function children(){ return state.accounts.filter(a=>a.role==="child"); }
 function parents(){ return state.accounts.filter(a=>a.role==="parent"); }
+function eligibleProviders(){ return state.accounts.filter(a=>a.role==="parent"||a.role==="admin"); }
 function roleLabel(r){ return r==="admin"?"主管理者":r==="parent"?"家長":"寶貝"; }
 async function persistAndRender(){ await saveState(); render(); }
 function ptsBadge(amount, currency, sign){
@@ -754,7 +763,7 @@ async function requestRedeem(rewardId){
   const rule = state.rules.rewards.find(r=>r.id===rewardId); if(!rule) return;
   const costs = rule.costs || {general: rule.points||0, special:0};
   if(!canAffordCosts(currentAccountId, costs)){ showToast("點數不足，還不能兌換這個獎勵"); return; }
-  state.pendingRedemptions.push({ id: uid("pr"), childId: currentAccountId, rewardId, rewardName: rule.name, provider: rule.provider||"common", costs, ts: Date.now(), status:"held" });
+  state.pendingRedemptions.push({ id: uid("pr"), childId: currentAccountId, rewardId, rewardName: rule.name, providers: providerIds(rule), costs, ts: Date.now(), status:"held" });
   showToast(`「${rule.name}」已送出兌換申請，點數先移入保留區`);
   await persistAndRender();
 }
@@ -791,11 +800,19 @@ async function addRule(type, name, desc, points, batch, currency){
   showToast("已新增規則");
   await persistAndRender();
 }
-async function addRewardRule(name, desc, generalCost, specialCost, provider){
+async function addRewardRule(name, desc, generalCost, specialCost, providers){
   if(!name || !name.trim()) return;
-  const item = { id: uid("r"), name: name.trim(), desc:(desc||"").trim(), costs:{ general: Number(generalCost)||0, special: Number(specialCost)||0 }, batch:"自訂", provider: provider||"common" };
+  const provs = (providers && providers.length>0) ? providers : ["common"];
+  const item = { id: uid("r"), name: name.trim(), desc:(desc||"").trim(), costs:{ general: Number(generalCost)||0, special: Number(specialCost)||0 }, batch:"自訂", providers: provs.includes("common") ? ["common"] : provs };
   state.rules.rewards.push(item);
   showToast("已新增獎勵");
+  await persistAndRender();
+}
+async function setRewardProviders(ruleId, providers){
+  const item = state.rules.rewards.find(r=>r.id===ruleId); if(!item) return;
+  const provs = (providers && providers.length>0) ? providers : ["common"];
+  item.providers = provs.includes("common") ? ["common"] : provs;
+  delete item.provider;
   await persistAndRender();
 }
 async function removeRule(type, ruleId){
@@ -833,7 +850,7 @@ function serializeRuleList(type){
 function serializeRewardList(){
   return state.rules.rewards.map(r=>{
     const costs = r.costs || {general:0,special:0};
-    const providerLabelText = (!r.provider || r.provider==="common") ? "common" : ((getAccount(r.provider)||{}).name || "common");
+    const providerLabelText = providerIds(r).includes("common") ? "common" : providerIds(r).map(id=>{ const a=getAccount(id); return a?a.name:""; }).filter(Boolean).join("/");
     return `${r.icon||""}|${r.name}|${costs.general||0}|${costs.special||0}|${providerLabelText}|${(r.desc||"").replace(/\|/g,"／")}`;
   }).join("\n");
 }
@@ -850,10 +867,14 @@ function parseRuleLines(text){
 function parseRewardLines(text){
   return text.split("\n").map(l=>l.trim()).filter(Boolean).map(line=>{
     const [icon,name,g,s,providerRaw,desc] = line.split("|");
-    let provider = "common";
     const pRaw = (providerRaw||"").trim();
-    if(pRaw && pRaw!=="common"){ const match = parents().find(p=>p.name===pRaw); provider = match ? match.id : "common"; }
-    return { id: uid("r"), icon:(icon||"").trim(), name:(name||"").trim(), costs:{general:Number(g)||0, special:Number(s)||0}, provider, desc:(desc||"").trim(), batch:"批次匯入" };
+    let providers = ["common"];
+    if(pRaw && pRaw!=="common"){
+      const names = pRaw.split("/").map(n=>n.trim()).filter(Boolean);
+      const ids = names.map(n=>{ const m = eligibleProviders().find(p=>p.name===n); return m?m.id:null; }).filter(Boolean);
+      providers = ids.length>0 ? ids : ["common"];
+    }
+    return { id: uid("r"), icon:(icon||"").trim(), name:(name||"").trim(), costs:{general:Number(g)||0, special:Number(s)||0}, providers, desc:(desc||"").trim(), batch:"批次匯入" };
   }).filter(x=>x.name);
 }
 function parseStepLines(text){
@@ -1205,10 +1226,16 @@ function renderExtraTab(acc){
   html += `</div>`;
   return html;
 }
-function providerLabel(providerId){
-  if(!providerId || providerId==="common") return "";
-  const p = getAccount(providerId);
-  return p ? `跟 ${p.name} 兌換` : "";
+function providerLabel(providers){
+  if(!providers || providers.length===0 || providers.includes("common")) return "";
+  const names = providers.map(id=>{ const a=getAccount(id); return a?a.name:null; }).filter(Boolean);
+  if(names.length===0) return "";
+  return `跟 ${names.join("、")} 兌換`;
+}
+function providerIds(reward){
+  if(reward.providers) return reward.providers;
+  if(reward.provider) return reward.provider==="common" ? ["common"] : [reward.provider];
+  return ["common"];
 }
 function renderShopTab(acc){
   let html = `<div class="card"><h2>🎁 兌換商店</h2>
@@ -1218,7 +1245,7 @@ function renderShopTab(acc){
   state.rules.rewards.forEach(r=>{
     const costs = r.costs || {general:0,special:0};
     const canAfford = canAffordCosts(acc.id, costs);
-    const pTag = providerLabel(r.provider);
+    const pTag = providerLabel(providerIds(r));
     html += `<div class="shop-card">${pTag? `<span class="provider-tag">${pTag}</span>`:""}
       <div style="display:flex;justify-content:center;margin:2px 0 4px;">${itemVisual(r,56)}</div>
       <div class="s-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div>
@@ -1238,7 +1265,7 @@ function renderShopTab(acc){
   html += `<div class="card"><h2>兌換審核中</h2>`;
   if(mine.length===0) html += `<div class="empty">目前沒有等待審核的兌換</div>`;
   mine.forEach(r=>{
-    const pTag = providerLabel(r.provider);
+    const pTag = providerLabel(providerIds(r));
     html += `<div class="task-item"><div class="t-main"><div class="t-name">${r.rewardName} ${pTag?`<span class="provider-tag">${pTag}</span>`:""}</div><div class="t-desc">送出時間 ${fmtTime(r.ts)}，等待完成兌換</div></div><span class="pts neg">${formatCosts(r.costs)}</span></div>`;
   });
   html += `</div>`;
@@ -1276,7 +1303,7 @@ function renderReviewTab(){
   if(pendingRed.length===0) html += `<div class="empty">目前沒有待處理的兌換申請</div>`;
   pendingRed.forEach(r=>{
     const c = getAccount(r.childId);
-    const pTag = providerLabel(r.provider);
+    const pTag = providerLabel(providerIds(r));
     html += `<div class="task-item"><div class="t-main"><div class="t-name">${c?c.name:""} · ${r.rewardName} ${pTag?`<span class="provider-tag">${pTag}</span>`:""}</div><div class="t-desc">申請時間 ${fmtTime(r.ts)}，點數已在保留區</div></div>
       <div class="btn-row"><span class="pts neg">${formatCosts(r.costs)}</span><button class="btn teal" data-action="completeRedeem" data-id="${r.id}">已完成兌換</button><button class="btn coral" data-action="cancelRedeem" data-id="${r.id}">取消</button></div></div>`;
   });
@@ -1360,10 +1387,27 @@ function renderDayTypesTab(){
     <small class="hint">在「日曆」頁點選某一天，就可以把那天指定為這裡任一種類型。沒有特別指定的日子，平日自動視為「上學日」、週末自動視為「放假日」。</small></div>`;
   return html;
 }
+function providerPickerHtml(ruleId, currentProviders){
+  const isCommon = currentProviders.includes("common");
+  return `<details class="icon-picker">
+    <summary>👪 提供者設定（可複選）</summary>
+    <div class="icon-grid" style="flex-direction:column;align-items:flex-start;gap:9px;">
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;"><input type="checkbox" class="provider-check" data-id="${ruleId}" value="common" ${isCommon?"checked":""}> 共同（全家）</label>
+      ${eligibleProviders().map(p=>`<label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;"><input type="checkbox" class="provider-check" data-id="${ruleId}" value="${p.id}" ${(!isCommon && currentProviders.includes(p.id))?"checked":""}> ${p.name}（${roleLabel(p.role)}）</label>`).join("")}
+    </div>
+  </details>`;
+}
 function renderRulesTab(){
-  let html = "";
-  [["extra","額外活動"],["deduction","扣點規則"]].forEach(([type,label])=>{
-    html += `<div class="card"><h2>${label}</h2>`;
+  let html = `<div class="child-tab-select">
+    <button data-action="setRulesSubTab" data-sub="extra" class="${rulesSubTab==="extra"?"active":""}">🎯 額外活動</button>
+    <button data-action="setRulesSubTab" data-sub="deduction" class="${rulesSubTab==="deduction"?"active":""}">⚠️ 扣點規則</button>
+    <button data-action="setRulesSubTab" data-sub="rewards" class="${rulesSubTab==="rewards"?"active":""}">🎁 兌換獎勵</button>
+  </div>`;
+
+  if(rulesSubTab==="extra" || rulesSubTab==="deduction"){
+    const type = rulesSubTab;
+    const label = type==="extra" ? "額外活動" : "扣點規則";
+    html += `<div class="card"><h2>${type==="extra"?"🎯":"⚠️"} ${label}</h2>`;
     if(state.rules[type].length>0) html += `<div class="drag-list" data-list-key="rules:${type}">`;
     state.rules[type].forEach(r=>{
       html += `<div class="rule-row drag-item" data-item-id="${r.id}">
@@ -1388,12 +1432,14 @@ function renderRulesTab(){
       </div>
       <div class="form-grid full"><div><label class="f-label">說明（選填）</label><input type="text" id="new_${type}_desc" placeholder="補充說明"></div></div>
       <button class="btn primary" data-action="addRule" data-type="${type}">新增此規則</button></div>`;
-  });
+    return html;
+  }
 
-  html += `<div class="card"><h2>兌換獎勵<small class="hint" style="font-weight:400;margin-left:6px;">可同時設定銅星與金星價格</small></h2>`;
+  html += `<div class="card"><h2>🎁 兌換獎勵<small class="hint" style="font-weight:400;margin-left:6px;">可同時設定銅星與金星價格</small></h2>`;
   if(state.rules.rewards.length>0) html += `<div class="drag-list" data-list-key="rules:rewards">`;
   state.rules.rewards.forEach(r=>{
-    const pTag = providerLabel(r.provider);
+    const providers = providerIds(r);
+    const pTag = providerLabel(providers);
     const costs = r.costs || {general:0,special:0};
     html += `<div class="rule-row drag-item" data-item-id="${r.id}">
       <span class="drag-handle">⠿</span>
@@ -1402,8 +1448,9 @@ function renderRulesTab(){
         <input type="text" class="edit-name" data-kind="rule" data-type="rewards" data-id="${r.id}" value="${r.name.replace(/"/g,'&quot;')}">
         ${pTag?`<span class="provider-tag">${pTag}</span>`:'<span class="batch-tag b2" style="margin-top:4px;display:inline-block;">共同</span>'}
         ${iconPickerHtml("rule", "rewards", r.id)}
+        ${providerPickerHtml(r.id, providers)}
       </div>
-      <div class="btn-row" style="flex-direction:column;align-items:flex-end;gap:4px;">
+      <div class="btn-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
         <div style="display:flex;gap:4px;align-items:center;">
           <span style="font-size:11px;color:var(--ink-soft);">⭐</span>
           <input type="number" class="edit-reward-cost" data-id="${r.id}" data-currency="general" value="${costs.general||0}" style="width:52px;">
@@ -1414,12 +1461,14 @@ function renderRulesTab(){
       </div></div>`;
   });
   if(state.rules.rewards.length>0) html += `</div>`;
-  html += `<div class="divider"></div><div class="form-grid">
-      <div><label class="f-label">獎勵名稱</label><input type="text" id="new_rewards_name" placeholder="例如：晚睡15分鐘"></div>
-      <div><label class="f-label">提供者</label><select class="field" id="new_rewards_provider">
-        <option value="common">共同（全家）</option>
-        ${parents().map(p=>`<option value="${p.id}">${p.name}</option>`).join("")}
-      </select></div></div>
+  html += `<div class="divider"></div><div class="form-grid full">
+      <div><label class="f-label">獎勵名稱</label><input type="text" id="new_rewards_name" placeholder="例如：晚睡15分鐘"></div></div>
+    <div class="form-grid full"><label class="f-label">提供者（可複選）</label>
+      <div class="icon-grid" style="flex-direction:column;align-items:flex-start;gap:8px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;"><input type="checkbox" class="new_reward_provider" value="common" checked> 共同（全家）</label>
+        ${eligibleProviders().map(p=>`<label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;"><input type="checkbox" class="new_reward_provider" value="${p.id}"> ${p.name}（${roleLabel(p.role)}）</label>`).join("")}
+      </div>
+    </div>
     <div class="form-grid">
       <div><label class="f-label">所需 ⭐銅星</label><input type="number" id="new_rewards_general" placeholder="10"></div>
       <div><label class="f-label">所需 🌟金星</label><input type="number" id="new_rewards_special" placeholder="0"></div></div>
@@ -1556,6 +1605,13 @@ function bindEvents(){
       await updateRewardCost(e.target.dataset.id, e.target.dataset.currency, e.target.value);
     });
   });
+  document.querySelectorAll(".provider-check").forEach(cb=>{
+    cb.addEventListener("change", async (e)=>{
+      const ruleId = e.target.dataset.id;
+      const checked = Array.from(document.querySelectorAll(`.provider-check[data-id="${ruleId}"]:checked`)).map(x=>x.value);
+      await setRewardProviders(ruleId, checked);
+    });
+  });
   document.querySelectorAll(".photo-input").forEach(inp=>{
     inp.addEventListener("change", async (e)=>{
       const file = e.target.files[0]; if(!file) return;
@@ -1580,6 +1636,7 @@ function bindEvents(){
         if(action==="calNext"){ calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth()+1, 1); render(); return; }
         if(action==="calToday"){ calMonth = new Date(); selectedDate = todayStr(); render(); return; }
         if(action==="setChildFilter"){ childViewFilter = el.dataset.id; render(); return; }
+        if(action==="setRulesSubTab"){ rulesSubTab = el.dataset.sub; render(); return; }
         if(action==="pickIcon"){
           const kind = el.dataset.kind;
           const containerId = kind==="rule" ? el.dataset.type : el.dataset.daytype;
@@ -1666,8 +1723,8 @@ function bindEvents(){
           const desc = document.getElementById("new_rewards_desc").value;
           const general = document.getElementById("new_rewards_general").value;
           const special = document.getElementById("new_rewards_special").value;
-          const provider = document.getElementById("new_rewards_provider").value;
-          await addRewardRule(name, desc, general, special, provider);
+          const providers = Array.from(document.querySelectorAll(".new_reward_provider:checked")).map(cb=>cb.value);
+          await addRewardRule(name, desc, general, special, providers);
         }
       }catch(err){ showToast("操作失敗，請再試一次"); console.error(err); }
     });
