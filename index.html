@@ -825,6 +825,82 @@ async function addDayType(name){
   showToast("已新增日期類型");
   await persistAndRender();
 }
+
+/* ---------------- 批次匯入／匯出 ---------------- */
+function serializeRuleList(type){
+  return state.rules[type].map(r=> `${r.icon||""}|${r.name}|${r.points}|${r.currency||CUR_GENERAL}|${(r.desc||"").replace(/\|/g,"／")}`).join("\n");
+}
+function serializeRewardList(){
+  return state.rules.rewards.map(r=>{
+    const costs = r.costs || {general:0,special:0};
+    const providerLabelText = (!r.provider || r.provider==="common") ? "common" : ((getAccount(r.provider)||{}).name || "common");
+    return `${r.icon||""}|${r.name}|${costs.general||0}|${costs.special||0}|${providerLabelText}|${(r.desc||"").replace(/\|/g,"／")}`;
+  }).join("\n");
+}
+function serializeStepList(dtId){
+  const dt = getDayType(dtId); if(!dt) return "";
+  return dt.steps.map(s=> `${s.icon||""}|${s.name}|${s.points}|${s.currency||CUR_GENERAL}|${s.type}|${(s.desc||"").replace(/\|/g,"／")}`).join("\n");
+}
+function parseRuleLines(text){
+  return text.split("\n").map(l=>l.trim()).filter(Boolean).map(line=>{
+    const [icon,name,points,currency,desc] = line.split("|");
+    return { id: uid("r"), icon:(icon||"").trim(), name:(name||"").trim(), points:Number(points)||0, currency:(currency||CUR_GENERAL).trim()||CUR_GENERAL, desc:(desc||"").trim(), batch:"批次匯入" };
+  }).filter(x=>x.name);
+}
+function parseRewardLines(text){
+  return text.split("\n").map(l=>l.trim()).filter(Boolean).map(line=>{
+    const [icon,name,g,s,providerRaw,desc] = line.split("|");
+    let provider = "common";
+    const pRaw = (providerRaw||"").trim();
+    if(pRaw && pRaw!=="common"){ const match = parents().find(p=>p.name===pRaw); provider = match ? match.id : "common"; }
+    return { id: uid("r"), icon:(icon||"").trim(), name:(name||"").trim(), costs:{general:Number(g)||0, special:Number(s)||0}, provider, desc:(desc||"").trim(), batch:"批次匯入" };
+  }).filter(x=>x.name);
+}
+function parseStepLines(text){
+  return text.split("\n").map(l=>l.trim()).filter(Boolean).map((line,i)=>{
+    const [icon,name,points,currency,type,desc] = line.split("|");
+    return { id: uid("st"), icon:(icon||"").trim(), name:(name||"").trim(), points:Number(points)||0, currency:(currency||CUR_GENERAL).trim()||CUR_GENERAL, type:((type||"task").trim()==="note"?"note":"task"), desc:(desc||"").trim(), order:i+1 };
+  }).filter(x=>x.name);
+}
+async function applyBulkRuleList(type, text){
+  if(!confirm(`確定要用這份清單整個取代目前的「${type==="extra"?"額外活動":"扣點規則"}」清單嗎？此動作無法復原。`)) return;
+  state.rules[type] = parseRuleLines(text);
+  showToast("已套用新清單");
+  await persistAndRender();
+}
+async function applyBulkRewardList(text){
+  if(!confirm("確定要用這份清單整個取代目前的「兌換獎勵」清單嗎？此動作無法復原。")) return;
+  state.rules.rewards = parseRewardLines(text);
+  showToast("已套用新清單");
+  await persistAndRender();
+}
+async function applyBulkStepList(dtId, text){
+  const dt = getDayType(dtId); if(!dt) return;
+  if(!confirm(`確定要用這份清單整個取代「${dt.name}」的步驟清單嗎？此動作無法復原。`)) return;
+  dt.steps = parseStepLines(text);
+  showToast("已套用新清單");
+  await persistAndRender();
+}
+function exportStateJson(){ return JSON.stringify(state, null, 2); }
+async function applyFullImport(text){
+  const sAcc = sessionAccount();
+  if(!sAcc || sAcc.role !== "admin"){ showToast("只有主管理者能執行完整資料匯入"); return; }
+  if(!confirm("這會取代「全部」資料，包含帳號、規則、帳本紀錄，且無法復原。真的要繼續嗎？")) return;
+  try{
+    const parsed = JSON.parse(text);
+    if(!parsed.accounts || !parsed.rules){ showToast("格式不正確，找不到 accounts 或 rules"); return; }
+    state = parsed;
+    if(!state.trash) state.trash = [];
+    if(!state.currencies) state.currencies = [{id:CUR_GENERAL,name:"銅星",symbol:"⭐"},{id:CUR_SPECIAL,name:"金星",symbol:"🌟"}];
+    showToast("已匯入完整資料");
+    await persistAndRender();
+  }catch(e){ showToast("JSON 格式錯誤，請檢查內容"); console.error(e); }
+}
+async function copyExportJson(){
+  try{ await navigator.clipboard.writeText(exportStateJson()); showToast("已複製完整資料到剪貼簿"); }
+  catch(e){ showToast("複製失敗，請手動全選文字方塊內容複製"); }
+}
+
 async function restoreTrashItem(trashId){
   const idx = state.trash.findIndex(t=>t.id===trashId); if(idx<0) return;
   const t = state.trash[idx];
@@ -972,7 +1048,7 @@ function render(){
   const isAdminOwnDashboard = acc.role === "admin";
   const tabs = isChild
     ? [["home","🏠 首頁"],["extra","🎯 額外活動"],["shop","🎁 兌換商店"],["ledger","📒 我的紀錄"]]
-    : [["home","📅 日曆"],["review","✅ 待審核"],["points","💰 點數調整"],["daytypes","🗓️ 日期類型"],["rules","🛠️ 規則管理"],["trash","🗑️ 垃圾桶"],["overview","👪 家庭總覽"]].concat(isAdminOwnDashboard ? [["accounts","🔑 帳戶管理"]] : []);
+    : [["home","📅 日曆"],["review","✅ 待審核"],["points","💰 點數調整"],["daytypes","🗓️ 日期類型"],["rules","🛠️ 規則管理"],["importexport","📋 批次匯入"],["trash","🗑️ 垃圾桶"],["overview","👪 家庭總覽"]].concat(isAdminOwnDashboard ? [["accounts","🔑 帳戶管理"]] : []);
   if(!activeTab) activeTab = "home";
 
   html += `<nav class="tabs">${tabs.map(([k,l])=>{
@@ -997,6 +1073,7 @@ function render(){
     else if(activeTab==="points") html += renderPointsTab();
     else if(activeTab==="daytypes") html += renderDayTypesTab();
     else if(activeTab==="rules") html += renderRulesTab();
+    else if(activeTab==="importexport") html += renderImportExportTab();
     else if(activeTab==="trash") html += renderTrashTab();
     else if(activeTab==="accounts") html += renderAccountsTab();
     else if(activeTab==="overview") html += renderOverviewTab();
@@ -1355,6 +1432,41 @@ function trashLabel(t){
   if(t.kind==="daytype_step"){ const dt=getDayType(t.subtype); return `${dt?dt.name:"日期類型"} 步驟：${t.payload.name}`; }
   return t.payload.name || "已刪除項目";
 }
+function renderImportExportTab(){
+  let html = `<div class="card"><h2>📋 批次匯入清單</h2>
+    <small class="hint">每行一項，用「｜」分隔欄位。直接編輯下面的文字方塊，按「套用」會整批取代該清單。</small></div>`;
+
+  html += `<div class="card"><h2>🎯 額外活動</h2>
+    <small class="hint">格式：圖示｜名稱｜點數｜貨幣(general/special)｜說明</small>
+    <textarea id="bulk_extra" rows="6" style="font-family:monospace;font-size:12.5px;margin-top:8px;">${serializeRuleList("extra")}</textarea>
+    <button class="btn primary" style="margin-top:8px;" data-action="applyBulkRule" data-type="extra">套用（取代原清單）</button></div>`;
+
+  html += `<div class="card"><h2>⚠️ 扣點規則</h2>
+    <small class="hint">格式：圖示｜名稱｜點數｜貨幣(general/special)｜說明</small>
+    <textarea id="bulk_deduction" rows="6" style="font-family:monospace;font-size:12.5px;margin-top:8px;">${serializeRuleList("deduction")}</textarea>
+    <button class="btn primary" style="margin-top:8px;" data-action="applyBulkRule" data-type="deduction">套用（取代原清單）</button></div>`;
+
+  html += `<div class="card"><h2>🎁 兌換獎勵</h2>
+    <small class="hint">格式：圖示｜名稱｜銅星價｜金星價｜提供者(common或家長姓名)｜說明</small>
+    <textarea id="bulk_rewards" rows="6" style="font-family:monospace;font-size:12.5px;margin-top:8px;">${serializeRewardList()}</textarea>
+    <button class="btn primary" style="margin-top:8px;" data-action="applyBulkReward">套用（取代原清單）</button></div>`;
+
+  state.dayTypes.forEach(dt=>{
+    html += `<div class="card"><h2><span class="dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${dt.color};margin-right:6px;"></span>${dt.name} 步驟</h2>
+      <small class="hint">格式：圖示｜名稱｜點數｜貨幣(general/special)｜類型(task/note)｜說明</small>
+      <textarea id="bulk_step_${dt.id}" rows="5" style="font-family:monospace;font-size:12.5px;margin-top:8px;">${serializeStepList(dt.id)}</textarea>
+      <button class="btn primary" style="margin-top:8px;" data-action="applyBulkStep" data-daytype="${dt.id}">套用（取代原清單）</button></div>`;
+  });
+
+  html += `<div class="card"><h2>💾 完整資料備份／還原</h2>
+    <small class="hint">可複製下方內容做備份，或請 Claude 幫你生成一整份新資料後貼上取代。<strong>僅主管理者可執行「全部取代」</strong>，且會影響帳號、規則、帳本等所有資料。</small>
+    <textarea id="full_import_text" rows="8" style="font-family:monospace;font-size:11px;margin-top:8px;">${exportStateJson()}</textarea>
+    <div class="btn-row" style="margin-top:8px;justify-content:flex-start;">
+      <button class="btn ghost" data-action="copyExport">📋 複製</button>
+      <button class="btn coral" data-action="applyFullImport">⚠️ 貼上並全部取代</button>
+    </div></div>`;
+  return html;
+}
 function renderTrashTab(){
   let html = `<div class="card"><h2>垃圾桶<span class="count">${state.trash.length}</span></h2>
     <small class="hint">刪除的活動、步驟會先保留在這裡30天，期間可以復原，也可以手動永久刪除。超過30天會自動清除。</small><div class="divider"></div>`;
@@ -1508,6 +1620,25 @@ function bindEvents(){
         else if(action==="restoreTrash") await restoreTrashItem(el.dataset.id);
         else if(action==="permDeleteTrash") await permanentlyDeleteTrash(el.dataset.id);
         else if(action==="addDayType"){ const v = document.getElementById("new_daytype_name").value; await addDayType(v); }
+        else if(action==="applyBulkRule"){
+          const type = el.dataset.type;
+          const text = document.getElementById(`bulk_${type}`).value;
+          await applyBulkRuleList(type, text);
+        }
+        else if(action==="applyBulkReward"){
+          const text = document.getElementById("bulk_rewards").value;
+          await applyBulkRewardList(text);
+        }
+        else if(action==="applyBulkStep"){
+          const dtId = el.dataset.daytype;
+          const text = document.getElementById(`bulk_step_${dtId}`).value;
+          await applyBulkStepList(dtId, text);
+        }
+        else if(action==="copyExport"){ await copyExportJson(); }
+        else if(action==="applyFullImport"){
+          const text = document.getElementById("full_import_text").value;
+          await applyFullImport(text);
+        }
         else if(action==="addDayTypeStep"){
           const dtId = el.dataset.daytype;
           const name = document.getElementById(`new_step_${dtId}_name`).value;
