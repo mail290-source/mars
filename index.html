@@ -550,6 +550,10 @@ function formatCosts(costs){
     return `${costs[cur]} ${m.symbol}${m.name}`;
   }).join(" + ") || "免費";
 }
+function costLabel(item){
+  if(item.directMode) return `📝 ${item.directLabel || "直接兌換"}`;
+  return formatCosts(item.costs || {general:0,special:0});
+}
 
 /* ---------------- 日期／日型輔助 ---------------- */
 function getDayType(id){ return state.dayTypes.find(d=>d.id===id); }
@@ -762,21 +766,23 @@ async function approveAllTasks(childId){
 async function requestRedeem(rewardId){
   const rule = state.rules.rewards.find(r=>r.id===rewardId); if(!rule) return;
   const costs = rule.costs || {general: rule.points||0, special:0};
-  if(!canAffordCosts(currentAccountId, costs)){ showToast("點數不足，還不能兌換這個獎勵"); return; }
-  state.pendingRedemptions.push({ id: uid("pr"), childId: currentAccountId, rewardId, rewardName: rule.name, providers: providerIds(rule), costs, ts: Date.now(), status:"held" });
-  showToast(`「${rule.name}」已送出兌換申請，點數先移入保留區`);
+  if(!rule.directMode && !canAffordCosts(currentAccountId, costs)){ showToast("點數不足，還不能兌換這個獎勵"); return; }
+  state.pendingRedemptions.push({ id: uid("pr"), childId: currentAccountId, rewardId, rewardName: rule.name, providers: providerIds(rule), costs, directMode: !!rule.directMode, directLabel: rule.directLabel||"", ts: Date.now(), status:"held" });
+  showToast(rule.directMode ? `「${rule.name}」已送出直接兌換申請` : `「${rule.name}」已送出兌換申請，點數先移入保留區`);
   await persistAndRender();
 }
 async function completeRedeem(redId){
   const r = state.pendingRedemptions.find(x=>x.id===redId); if(!r || r.status!=="held") return;
   r.status = "completed";
-  Object.keys(r.costs).forEach(cur=>{ const amt=r.costs[cur]||0; if(amt>0) addLedgerEntry(r.childId, -amt, r.rewardName, "兌換完成扣點", cur); });
+  if(!r.directMode){
+    Object.keys(r.costs).forEach(cur=>{ const amt=r.costs[cur]||0; if(amt>0) addLedgerEntry(r.childId, -amt, r.rewardName, "兌換完成扣點", cur); });
+  }
   showToast(`已完成兌換「${r.rewardName}」`);
   await persistAndRender();
 }
 async function cancelRedeem(redId){
   const r = state.pendingRedemptions.find(x=>x.id===redId); if(!r || r.status!=="held") return;
-  r.status = "cancelled"; showToast(`已取消兌換「${r.rewardName}」，點數退回可用餘額`);
+  r.status = "cancelled"; showToast(`已取消兌換「${r.rewardName}」${r.directMode?"":"，點數退回可用餘額"}`);
   await persistAndRender();
 }
 async function addAccount(name, role, passwordPlain){
@@ -800,12 +806,26 @@ async function addRule(type, name, desc, points, batch, currency){
   showToast("已新增規則");
   await persistAndRender();
 }
-async function addRewardRule(name, desc, generalCost, specialCost, providers){
+async function addRewardRule(name, desc, generalCost, specialCost, providers, directMode, directLabel){
   if(!name || !name.trim()) return;
   const provs = (providers && providers.length>0) ? providers : ["common"];
-  const item = { id: uid("r"), name: name.trim(), desc:(desc||"").trim(), costs:{ general: Number(generalCost)||0, special: Number(specialCost)||0 }, batch:"自訂", providers: provs.includes("common") ? ["common"] : provs };
+  const item = { id: uid("r"), name: name.trim(), desc:(desc||"").trim(), batch:"自訂", providers: provs.includes("common") ? ["common"] : provs };
+  if(directMode){
+    item.directMode = true;
+    item.directLabel = (directLabel||"").trim() || "直接兌換";
+    item.costs = { general:0, special:0 };
+  } else {
+    item.directMode = false;
+    item.costs = { general: Number(generalCost)||0, special: Number(specialCost)||0 };
+  }
   state.rules.rewards.push(item);
   showToast("已新增獎勵");
+  await persistAndRender();
+}
+async function setRewardDirectMode(ruleId, isDirect){
+  const item = state.rules.rewards.find(r=>r.id===ruleId); if(!item) return;
+  item.directMode = isDirect;
+  if(isDirect){ item.costs = {general:0,special:0}; if(!item.directLabel) item.directLabel = "直接兌換"; }
   await persistAndRender();
 }
 async function setRewardProviders(ruleId, providers){
@@ -1249,7 +1269,7 @@ function renderShopTab(acc){
     html += `<div class="shop-card">${pTag? `<span class="provider-tag">${pTag}</span>`:""}
       <div style="display:flex;justify-content:center;margin:2px 0 4px;">${itemVisual(r,56)}</div>
       <div class="s-name">${r.name} <span class="batch-tag ${r.batch==='第一批'?'b1':'b2'}">${r.batch}</span></div>
-      <div class="s-desc">${r.desc||""}</div><div class="s-price">${formatCosts(costs)}</div>
+      <div class="s-desc">${r.desc||""}</div><div class="s-price">${costLabel(r)}</div>
       <button class="btn gold" ${canAfford?"":"disabled"} data-action="requestRedeem" data-id="${r.id}">${canAfford?"🎉 申請兌換":"點數不足"}</button></div>`;
   });
   html += `</div></div>`;
@@ -1266,7 +1286,7 @@ function renderShopTab(acc){
   if(mine.length===0) html += `<div class="empty">目前沒有等待審核的兌換</div>`;
   mine.forEach(r=>{
     const pTag = providerLabel(providerIds(r));
-    html += `<div class="task-item"><div class="t-main"><div class="t-name">${r.rewardName} ${pTag?`<span class="provider-tag">${pTag}</span>`:""}</div><div class="t-desc">送出時間 ${fmtTime(r.ts)}，等待完成兌換</div></div><span class="pts neg">${formatCosts(r.costs)}</span></div>`;
+    html += `<div class="task-item"><div class="t-main"><div class="t-name">${r.rewardName} ${pTag?`<span class="provider-tag">${pTag}</span>`:""}</div><div class="t-desc">送出時間 ${fmtTime(r.ts)}，等待完成兌換</div></div><span class="pts neg">${costLabel(r)}</span></div>`;
   });
   html += `</div>`;
   return html;
@@ -1305,7 +1325,7 @@ function renderReviewTab(){
     const c = getAccount(r.childId);
     const pTag = providerLabel(providerIds(r));
     html += `<div class="task-item"><div class="t-main"><div class="t-name">${c?c.name:""} · ${r.rewardName} ${pTag?`<span class="provider-tag">${pTag}</span>`:""}</div><div class="t-desc">申請時間 ${fmtTime(r.ts)}，點數已在保留區</div></div>
-      <div class="btn-row"><span class="pts neg">${formatCosts(r.costs)}</span><button class="btn teal" data-action="completeRedeem" data-id="${r.id}">已完成兌換</button><button class="btn coral" data-action="cancelRedeem" data-id="${r.id}">取消</button></div></div>`;
+      <div class="btn-row"><span class="pts neg">${costLabel(r)}</span><button class="btn teal" data-action="completeRedeem" data-id="${r.id}">已完成兌換</button><button class="btn coral" data-action="cancelRedeem" data-id="${r.id}">取消</button></div></div>`;
   });
   html += `</div>`;
   const pendingSteps = getPendingCalendarSteps();
@@ -1435,28 +1455,35 @@ function renderRulesTab(){
     return html;
   }
 
-  html += `<div class="card"><h2>🎁 兌換獎勵<small class="hint" style="font-weight:400;margin-left:6px;">可同時設定銅星與金星價格</small></h2>`;
+  html += `<div class="card"><h2>🎁 兌換獎勵<small class="hint" style="font-weight:400;margin-left:6px;">可設定星星價格，或改成不累積星星的直接兌換</small></h2>`;
   if(state.rules.rewards.length>0) html += `<div class="drag-list" data-list-key="rules:rewards">`;
   state.rules.rewards.forEach(r=>{
     const providers = providerIds(r);
     const pTag = providerLabel(providers);
     const costs = r.costs || {general:0,special:0};
+    const isDirect = !!r.directMode;
     html += `<div class="rule-row drag-item" data-item-id="${r.id}">
       <span class="drag-handle">⠿</span>
       ${itemVisual(r,36)}
       <div class="t-main">
         <input type="text" class="edit-name" data-kind="rule" data-type="rewards" data-id="${r.id}" value="${r.name.replace(/"/g,'&quot;')}">
         ${pTag?`<span class="provider-tag">${pTag}</span>`:'<span class="batch-tag b2" style="margin-top:4px;display:inline-block;">共同</span>'}
+        ${isDirect?'<span class="batch-tag b1" style="margin-top:4px;display:inline-block;">📝 直接兌換</span>':''}
         ${iconPickerHtml("rule", "rewards", r.id)}
         ${providerPickerHtml(r.id, providers)}
       </div>
-      <div class="btn-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-        <div style="display:flex;gap:4px;align-items:center;">
-          <span style="font-size:11px;color:var(--ink-soft);">⭐</span>
-          <input type="number" class="edit-reward-cost" data-id="${r.id}" data-currency="general" value="${costs.general||0}" style="width:52px;">
-          <span style="font-size:11px;color:var(--ink-soft);">🌟</span>
-          <input type="number" class="edit-reward-cost" data-id="${r.id}" data-currency="special" value="${costs.special||0}" style="width:52px;">
-        </div>
+      <div class="btn-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ink-soft);">
+          <input type="checkbox" class="reward-direct-toggle" data-id="${r.id}" ${isDirect?"checked":""}> 📝 直接兌換（不累積星星）
+        </label>
+        ${isDirect
+          ? `<input type="text" class="edit-direct-label" data-id="${r.id}" value="${(r.directLabel||"").replace(/"/g,'&quot;')}" placeholder="例如：隨時可跟媽媽討論兌換" style="width:180px;">`
+          : `<div style="display:flex;gap:4px;align-items:center;">
+              <span style="font-size:11px;color:var(--ink-soft);">⭐</span>
+              <input type="number" class="edit-reward-cost" data-id="${r.id}" data-currency="general" value="${costs.general||0}" style="width:52px;">
+              <span style="font-size:11px;color:var(--ink-soft);">🌟</span>
+              <input type="number" class="edit-reward-cost" data-id="${r.id}" data-currency="special" value="${costs.special||0}" style="width:52px;">
+            </div>`}
         <button class="btn ghost" data-action="removeRule" data-type="rewards" data-id="${r.id}">刪除</button>
       </div></div>`;
   });
@@ -1469,9 +1496,16 @@ function renderRulesTab(){
         ${eligibleProviders().map(p=>`<label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;"><input type="checkbox" class="new_reward_provider" value="${p.id}"> ${p.name}（${roleLabel(p.role)}）</label>`).join("")}
       </div>
     </div>
-    <div class="form-grid">
+    <div class="form-grid full">
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;">
+        <input type="checkbox" id="new_rewards_direct_toggle"> 📝 設為直接兌換（不累積星星，用文字說明取代價格）
+      </label>
+    </div>
+    <div class="form-grid" id="new_rewards_points_fields">
       <div><label class="f-label">所需 ⭐銅星</label><input type="number" id="new_rewards_general" placeholder="10"></div>
       <div><label class="f-label">所需 🌟金星</label><input type="number" id="new_rewards_special" placeholder="0"></div></div>
+    <div class="form-grid full" id="new_rewards_direct_field" style="display:none;">
+      <div><label class="f-label">直接兌換說明</label><input type="text" id="new_rewards_direct_label" placeholder="例如：隨時可跟媽媽討論兌換"></div></div>
     <div class="form-grid full"><div><label class="f-label">說明（選填）</label><input type="text" id="new_rewards_desc" placeholder="補充說明"></div></div>
     <button class="btn primary" data-action="addRewardRule">新增此獎勵</button></div>`;
   return html;
@@ -1612,6 +1646,19 @@ function bindEvents(){
       await setRewardProviders(ruleId, checked);
     });
   });
+  document.querySelectorAll(".reward-direct-toggle").forEach(cb=>{
+    cb.addEventListener("change", async (e)=>{ await setRewardDirectMode(e.target.dataset.id, e.target.checked); });
+  });
+  document.querySelectorAll(".edit-direct-label").forEach(input=>{
+    input.addEventListener("change", async (e)=>{ await updateRuleField("rewards", e.target.dataset.id, "directLabel", e.target.value); });
+  });
+  const newRewardDirectToggle = document.getElementById("new_rewards_direct_toggle");
+  if(newRewardDirectToggle){
+    newRewardDirectToggle.addEventListener("change", (e)=>{
+      document.getElementById("new_rewards_points_fields").style.display = e.target.checked ? "none" : "";
+      document.getElementById("new_rewards_direct_field").style.display = e.target.checked ? "" : "none";
+    });
+  }
   document.querySelectorAll(".photo-input").forEach(inp=>{
     inp.addEventListener("change", async (e)=>{
       const file = e.target.files[0]; if(!file) return;
@@ -1724,7 +1771,9 @@ function bindEvents(){
           const general = document.getElementById("new_rewards_general").value;
           const special = document.getElementById("new_rewards_special").value;
           const providers = Array.from(document.querySelectorAll(".new_reward_provider:checked")).map(cb=>cb.value);
-          await addRewardRule(name, desc, general, special, providers);
+          const directMode = document.getElementById("new_rewards_direct_toggle").checked;
+          const directLabel = document.getElementById("new_rewards_direct_label").value;
+          await addRewardRule(name, desc, general, special, providers, directMode, directLabel);
         }
       }catch(err){ showToast("操作失敗，請再試一次"); console.error(err); }
     });
