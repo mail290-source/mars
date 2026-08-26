@@ -890,9 +890,11 @@ function isHeaderRow(cells){
 }
 function parseRuleLines(text){
   return text.split("\n").map(l=>l.replace(/\r/g,"")).filter(l=>l.trim()).map(line=>{
-    const cells = splitCells(line);
+    const cells = splitCells(line).map(c=>(c||"").trim());
     if(isHeaderRow(cells)) return null;
-    const [icon,name,points,currency,desc] = cells;
+    const icon = cells[0], name = cells[1], points = cells[2], currency = cells[3];
+    // 容錯：如果多貼了「類型」欄（例如誤貼了日期類型格式），一律取最後一欄當作說明
+    const desc = cells.length > 5 ? cells[cells.length-1] : (cells[4]||"");
     return { id: uid("r"), icon:(icon||"").trim(), name:(name||"").trim(), points:Number(points)||0, currency:(currency||CUR_GENERAL).trim()||CUR_GENERAL, desc:(desc||"").trim(), batch:"批次匯入" };
   }).filter(x=>x && x.name);
 }
@@ -913,9 +915,12 @@ function parseRewardLines(text){
 }
 function parseStepLines(text){
   return text.split("\n").map(l=>l.replace(/\r/g,"")).filter(l=>l.trim()).map((line,i)=>{
-    const cells = splitCells(line);
+    const cells = splitCells(line).map(c=>(c||"").trim());
     if(isHeaderRow(cells)) return null;
-    const [icon,name,points,currency,type,desc] = cells;
+    const icon = cells[0], name = cells[1], points = cells[2], currency = cells[3];
+    let type, desc;
+    if(cells.length >= 6){ type = cells[4]; desc = cells[cells.length-1]; }
+    else { type = "task"; desc = cells[4]||""; } // 容錯：少貼了「類型」欄時，預設為 task，最後一欄當說明
     return { id: uid("st"), icon:(icon||"").trim(), name:(name||"").trim(), points:Number(points)||0, currency:(currency||CUR_GENERAL).trim()||CUR_GENERAL, type:((type||"task").trim()==="note"?"note":"task"), desc:(desc||"").trim(), order:i+1 };
   }).filter(x=>x && x.name);
 }
