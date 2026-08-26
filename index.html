@@ -878,30 +878,46 @@ function serializeStepList(dtId){
   const dt = getDayType(dtId); if(!dt) return "";
   return dt.steps.map(s=> `${s.icon||""}|${s.name}|${s.points}|${s.currency||CUR_GENERAL}|${s.type}|${(s.desc||"").replace(/\|/g,"／")}`).join("\n");
 }
+function splitCells(line){
+  // 支援直接從 Excel 複製貼上（Tab 分隔），也支援手動用｜分隔
+  if(line.indexOf("\t") >= 0) return line.split("\t");
+  return line.split("|");
+}
+function isHeaderRow(cells){
+  const first = (cells[0]||"").trim();
+  const second = (cells[1]||"").trim();
+  return first==="圖示" || second==="名稱";
+}
 function parseRuleLines(text){
-  return text.split("\n").map(l=>l.trim()).filter(Boolean).map(line=>{
-    const [icon,name,points,currency,desc] = line.split("|");
+  return text.split("\n").map(l=>l.replace(/\r/g,"")).filter(l=>l.trim()).map(line=>{
+    const cells = splitCells(line);
+    if(isHeaderRow(cells)) return null;
+    const [icon,name,points,currency,desc] = cells;
     return { id: uid("r"), icon:(icon||"").trim(), name:(name||"").trim(), points:Number(points)||0, currency:(currency||CUR_GENERAL).trim()||CUR_GENERAL, desc:(desc||"").trim(), batch:"批次匯入" };
-  }).filter(x=>x.name);
+  }).filter(x=>x && x.name);
 }
 function parseRewardLines(text){
-  return text.split("\n").map(l=>l.trim()).filter(Boolean).map(line=>{
-    const [icon,name,g,s,providerRaw,desc] = line.split("|");
+  return text.split("\n").map(l=>l.replace(/\r/g,"")).filter(l=>l.trim()).map(line=>{
+    const cells = splitCells(line);
+    if(isHeaderRow(cells)) return null;
+    const [icon,name,g,s,providerRaw,desc] = cells;
     const pRaw = (providerRaw||"").trim();
     let providers = ["common"];
     if(pRaw && pRaw!=="common"){
-      const names = pRaw.split("/").map(n=>n.trim()).filter(Boolean);
+      const names = pRaw.split(/[\/、,，]/).map(n=>n.trim()).filter(Boolean);
       const ids = names.map(n=>{ const m = eligibleProviders().find(p=>p.name===n); return m?m.id:null; }).filter(Boolean);
       providers = ids.length>0 ? ids : ["common"];
     }
     return { id: uid("r"), icon:(icon||"").trim(), name:(name||"").trim(), costs:{general:Number(g)||0, special:Number(s)||0}, providers, desc:(desc||"").trim(), batch:"批次匯入" };
-  }).filter(x=>x.name);
+  }).filter(x=>x && x.name);
 }
 function parseStepLines(text){
-  return text.split("\n").map(l=>l.trim()).filter(Boolean).map((line,i)=>{
-    const [icon,name,points,currency,type,desc] = line.split("|");
+  return text.split("\n").map(l=>l.replace(/\r/g,"")).filter(l=>l.trim()).map((line,i)=>{
+    const cells = splitCells(line);
+    if(isHeaderRow(cells)) return null;
+    const [icon,name,points,currency,type,desc] = cells;
     return { id: uid("st"), icon:(icon||"").trim(), name:(name||"").trim(), points:Number(points)||0, currency:(currency||CUR_GENERAL).trim()||CUR_GENERAL, type:((type||"task").trim()==="note"?"note":"task"), desc:(desc||"").trim(), order:i+1 };
-  }).filter(x=>x.name);
+  }).filter(x=>x && x.name);
 }
 async function applyBulkRuleList(type, text){
   if(!confirm(`確定要用這份清單整個取代目前的「${type==="extra"?"額外活動":"扣點規則"}」清單嗎？此動作無法復原。`)) return;
@@ -1517,26 +1533,26 @@ function trashLabel(t){
 }
 function renderImportExportTab(){
   let html = `<div class="card"><h2>📋 批次匯入清單</h2>
-    <small class="hint">每行一項，用「｜」分隔欄位。直接編輯下面的文字方塊，按「套用」會整批取代該清單。</small></div>`;
+    <small class="hint">✅ 可以直接從 Excel 選取儲存格「複製」，然後在下面的文字方塊裡「貼上」（會自動偵測 Tab 分隔），也可以手動用「｜」分隔輸入。貼上後按「套用」會整批取代該清單。若貼上的內容含表頭（例如第一列是「圖示、名稱…」），系統會自動略過那一列。</small></div>`;
 
   html += `<div class="card"><h2>🎯 額外活動</h2>
-    <small class="hint">格式：圖示｜名稱｜點數｜貨幣(general/special)｜說明</small>
+    <small class="hint">欄位順序：圖示、名稱、點數、貨幣(general/special)、說明</small>
     <textarea id="bulk_extra" rows="6" style="font-family:monospace;font-size:12.5px;margin-top:8px;">${serializeRuleList("extra")}</textarea>
     <button class="btn primary" style="margin-top:8px;" data-action="applyBulkRule" data-type="extra">套用（取代原清單）</button></div>`;
 
   html += `<div class="card"><h2>⚠️ 扣點規則</h2>
-    <small class="hint">格式：圖示｜名稱｜點數｜貨幣(general/special)｜說明</small>
+    <small class="hint">欄位順序：圖示、名稱、點數、貨幣(general/special)、說明</small>
     <textarea id="bulk_deduction" rows="6" style="font-family:monospace;font-size:12.5px;margin-top:8px;">${serializeRuleList("deduction")}</textarea>
     <button class="btn primary" style="margin-top:8px;" data-action="applyBulkRule" data-type="deduction">套用（取代原清單）</button></div>`;
 
   html += `<div class="card"><h2>🎁 兌換獎勵</h2>
-    <small class="hint">格式：圖示｜名稱｜銅星價｜金星價｜提供者(common或家長姓名)｜說明</small>
+    <small class="hint">欄位順序：圖示、名稱、銅星價、金星價、提供者(common或家長姓名，多人可用「/」分隔)、說明</small>
     <textarea id="bulk_rewards" rows="6" style="font-family:monospace;font-size:12.5px;margin-top:8px;">${serializeRewardList()}</textarea>
     <button class="btn primary" style="margin-top:8px;" data-action="applyBulkReward">套用（取代原清單）</button></div>`;
 
   state.dayTypes.forEach(dt=>{
     html += `<div class="card"><h2><span class="dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${dt.color};margin-right:6px;"></span>${dt.name} 步驟</h2>
-      <small class="hint">格式：圖示｜名稱｜點數｜貨幣(general/special)｜類型(task/note)｜說明</small>
+      <small class="hint">欄位順序：圖示、名稱、點數、貨幣(general/special)、類型(task/note)、說明</small>
       <textarea id="bulk_step_${dt.id}" rows="5" style="font-family:monospace;font-size:12.5px;margin-top:8px;">${serializeStepList(dt.id)}</textarea>
       <button class="btn primary" style="margin-top:8px;" data-action="applyBulkStep" data-daytype="${dt.id}">套用（取代原清單）</button></div>`;
   });
